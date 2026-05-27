@@ -9,8 +9,8 @@
     --color-white-500: #f8f9fa;
     --color-white-600: #d2d7da;
     --color-white-700: #f7f2ee;
-    --color-primary: #1c69d4;
-    --color-secondary: #cc0000;
+    --color-primary: #FF660A;
+    --color-secondary: #ffffff;
     --color-secondary-beige: #d0c1b1;
     --color-dark-1000: #000000;
     --color-dark-900: #0a0a0a;
@@ -25,9 +25,9 @@
 
     /* Scroll Bar */
     --scrollbar-size: 6px;
-    --scrollbar-track-color: #1a1a1a;
-    --scrollbar-thumb-color: #333333;
-    --scrollbar-thumb-color-hover: #444444;
+    --scrollbar-track-color: #FF981A;
+    --scrollbar-thumb-color: #FF660A;
+    --scrollbar-thumb-color-hover: #FF810A;
 
     /* ── Небезпека (danger) ─────────────────────────────────────────────────── */
     --color-danger: #dc2626;
