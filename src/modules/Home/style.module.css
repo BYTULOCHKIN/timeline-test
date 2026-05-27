@@ -1,0 +1,283 @@
+/* ── Page ────────────────────────────────────────────────────────────────────── */
+.page {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--color-dark-900);
+    color: var(--color-white-100);
+}
+
+/* ── M Performance stripe ────────────────────────────────────────────────────── */
+.mStripe {
+    display: flex;
+    flex-shrink: 0;
+    height: 1rem;
+    position: sticky;
+    top: 0;
+}
+
+.mStripe span {
+    display: block;
+    flex: 1;
+}
+
+.s1,
+.s3 {
+    background-color: var(--color-primary);
+}
+
+.s2 {
+    background-color: var(--color-secondary);
+}
+
+/* ── Hero ────────────────────────────────────────────────────────────────────── */
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3.5rem 2rem 2.5rem;
+    border-bottom: 0.5px solid var(--color-border);
+    gap: 1rem;
+    text-align: center;
+}
+
+.logo {
+    width: 7rem;
+    height: 7rem;
+    border-radius: 50%;
+    cursor: pointer;
+    user-select: none;
+}
+
+.badge {
+    padding: 4px 14px;
+    border: 0.5px solid var(--color-primary);
+    border-radius: 999px;
+    background-color: var(--color-dark-600);
+    color: var(--color-primary);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+}
+
+.accent {
+    color: var(--color-primary);
+}
+
+.subtitle {
+    max-width: 420px;
+    color: var(--color-text-secondary);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+}
+
+.cmd {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0.25rem;
+    padding: 10px 16px;
+    border: 0.5px solid var(--color-border);
+    border-radius: 8px;
+    background-color: var(--color-dark-600);
+    color: var(--color-white-600);
+    font-family: monospace;
+    font-size: 0.8125rem;
+}
+
+.prompt {
+    color: var(--color-primary);
+    opacity: 0.7;
+}
+
+/* ── Section ─────────────────────────────────────────────────────────────────── */
+.section {
+    padding: 2rem 1.5rem;
+}
+
+.sectionLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+    color: var(--color-text-secondary);
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.sectionLabel::after {
+    content: "";
+    flex: 1;
+    height: 0.5px;
+    background-color: var(--color-border);
+}
+
+/* ── Stack grid ──────────────────────────────────────────────────────────────── */
+.stackGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.stackCard {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    border: 0.5px solid var(--color-border);
+    border-radius: 10px;
+    background-color: var(--color-dark-600);
+    transition:
+        background-color 0.2s,
+        border-color 0.2s;
+}
+
+.stackCard:hover {
+    border-color: var(--color-primary);
+    background-color: var(--color-surface-raised);
+}
+
+.cardDot {
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    margin-top: 4px;
+    border-radius: 50%;
+}
+
+.cardName {
+    margin-bottom: 3px;
+    color: var(--color-white-100);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.cardRole {
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────────────── */
+.divider {
+    height: 0.5px;
+    background-color: var(--color-border);
+}
+
+/* ── Architecture tree ───────────────────────────────────────────────────────── */
+.arch {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.archRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8125rem;
+}
+
+.archRow.indent {
+    padding-left: 22px;
+}
+
+.archRow.folder .arName {
+    color: var(--color-text-secondary);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.arIcon {
+    flex-shrink: 0;
+    width: 20px;
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+}
+
+.arName {
+    color: var(--color-white-600);
+    font-family: monospace;
+}
+
+.arDesc {
+    margin-left: auto;
+    color: var(--color-text-secondary);
+    font-size: 0.6875rem;
+}
+
+/* ── Counter ─────────────────────────────────────────────────────────────────── */
+.counterWrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem 0;
+}
+
+.counterHint {
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────────── */
+.footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+    padding: 0.875rem 1.5rem;
+    border-top: 0.5px solid var(--color-border);
+}
+
+.footerLeft {
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chip {
+    padding: 3px 8px;
+    border: 0.5px solid var(--color-border);
+    border-radius: 6px;
+    background-color: var(--color-dark-600);
+    color: var(--color-text-secondary);
+    font-size: 0.6875rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────────── */
+@media screen and (max-width: 480px) {
+    .title {
+        font-size: 1.625rem;
+    }
+
+    .cmd {
+        padding: 8px 12px;
+        font-size: 0.6875rem;
+    }
+
+    .stackGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .chips {
+        display: none;
+    }
+}
