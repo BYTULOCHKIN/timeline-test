@@ -18,6 +18,7 @@ dist-ssr
 /storybook-static
 .fttemplates
 .tanstack
+supabase/.temp
 
 # Editor directories and files
 .vscode/*

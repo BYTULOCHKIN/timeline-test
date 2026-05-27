@@ -10,8 +10,8 @@ type TimelineHeroProps = {
 
 const heroStats = [
     { value: '10', label: 'років розвитку локального звʼязку' },
-    { value: '78 тис.+', label: 'умовних підключених клієнтів' },
-    { value: '610 км', label: 'умовних оптичних маршрутів' },
+    { value: '250 тис.+', label: 'активних абонентів.' },
+    { value: '30 тис км.', label: 'довжина мережі' },
 ];
 
 const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
@@ -29,7 +29,7 @@ const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
                 </div>
                 <div className={s.eyebrow}>Засновано у 2016 · 10 років у 2026</div>
                 <Typography id="timeline-hero-title" variant="heading-3xl" className={s.heroTitle}>
-                    Десятиліття швидшого, спокійнішого інтернету.
+                    Десятиліття швидшого, якіснішого, потужнішого інтернету.
                 </Typography>
                 <Typography variant="body-lg" className={s.heroText}>
                     Дослідіть ключові етапи HomeNET: від районного запуску до стійкої оптичної мережі для дому, бізнесу

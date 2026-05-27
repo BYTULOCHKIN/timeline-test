@@ -2,6 +2,7 @@ import type { Milestone } from '../../types';
 import React from 'react';
 import clsx from 'clsx';
 import { motion } from 'framer-motion';
+import { Button } from '@/components/Button/Button';
 import Typography from '@/components/Typography/Typography';
 import s from '../../style.module.css';
 
@@ -9,10 +10,11 @@ type TimelineMilestoneCardProps = {
     milestone: Milestone;
     isActive: boolean;
     index: number;
+    onYearStoriesOpen: (_year: string) => void;
 };
 
 const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCardProps>(
-    ({ milestone, isActive, index }, ref) => {
+    ({ milestone, isActive, index, onYearStoriesOpen }, ref) => {
         const metrics = Object.entries(milestone.metrics ?? {});
         const isMirrored = index % 2 === 1;
 
@@ -81,6 +83,17 @@ const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCar
                                 })}
                             </dl>
                         ) : null}
+
+                        <Button
+                            className={s.storyButton}
+                            variant="ghost"
+                            size="medium"
+                            onClick={() => {
+                                onYearStoriesOpen(milestone.year);
+                            }}
+                        >
+                            Історії команди за {milestone.year}
+                        </Button>
                     </div>
                 </motion.div>
             </motion.article>

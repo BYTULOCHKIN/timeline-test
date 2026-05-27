@@ -1,0 +1,5 @@
+[functions.create-user-story]
+verify_jwt = false
+
+[functions.delete-user-story]
+verify_jwt = false

@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ALL_TIMELINE_FILTER, MILESTONES, TIMELINE_TAGS } from './constants';
 import FinalCTA from './components/FinalCTA';
+import StoriesModal from './components/StoriesModal';
 import Timeline from './components/Timeline';
 import TimelineFilters from './components/TimelineFilters';
 import TimelineHero from './components/TimelineHero';
@@ -12,6 +13,7 @@ const Home: React.FC = () => {
     const shouldReduceMotion = useReducedMotion();
     const [activeTag, setActiveTag] = React.useState<string>(ALL_TIMELINE_FILTER);
     const [activeYear, setActiveYear] = React.useState(MILESTONES[0]?.year ?? '');
+    const [selectedStoriesYear, setSelectedStoriesYear] = React.useState<string | null>(null);
 
     const filterOptions = React.useMemo(() => {
         return [ALL_TIMELINE_FILTER, ...TIMELINE_TAGS];
@@ -47,6 +49,14 @@ const Home: React.FC = () => {
             block: 'center',
         });
     }, []);
+
+    const openStoriesForYear = React.useCallback(
+        (year: string) => {
+            setSelectedStoriesYear(year);
+            scrollToYear(year);
+        },
+        [scrollToYear]
+    );
 
     const scrollToTimeline = React.useCallback(() => {
         document.getElementById('timeline')?.scrollIntoView({
@@ -92,10 +102,22 @@ const Home: React.FC = () => {
                 years={years}
                 activeYear={activeYear}
                 availableYears={availableYears}
-                onYearSelect={scrollToYear}
+                onYearSelect={openStoriesForYear}
             />
-            <Timeline milestones={filteredMilestones} activeYear={activeYear} onActiveYearChange={setActiveYear} />
+            <Timeline
+                milestones={filteredMilestones}
+                activeYear={activeYear}
+                onActiveYearChange={setActiveYear}
+                onYearStoriesOpen={openStoriesForYear}
+            />
             <FinalCTA onRestart={restartTimeline} />
+            <StoriesModal
+                year={selectedStoriesYear}
+                isOpen={Boolean(selectedStoriesYear)}
+                onClose={() => {
+                    setSelectedStoriesYear(null);
+                }}
+            />
         </main>
     );
 };

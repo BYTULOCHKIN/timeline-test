@@ -10,9 +10,10 @@ type TimelineProps = {
     milestones: Milestone[];
     activeYear: string;
     onActiveYearChange: (_year: string) => void;
+    onYearStoriesOpen: (_year: string) => void;
 };
 
-const Timeline: React.FC<TimelineProps> = ({ milestones, activeYear, onActiveYearChange }) => {
+const Timeline: React.FC<TimelineProps> = ({ milestones, activeYear, onActiveYearChange, onYearStoriesOpen }) => {
     const sectionRef = React.useRef<HTMLElement | null>(null);
     const milestoneRefs = React.useRef(new Map<string, HTMLElement>());
     const { scrollYProgress } = useScroll({
@@ -113,6 +114,7 @@ const Timeline: React.FC<TimelineProps> = ({ milestones, activeYear, onActiveYea
                                     milestone={milestone}
                                     isActive={activeYear === milestone.year}
                                     index={index}
+                                    onYearStoriesOpen={onYearStoriesOpen}
                                 />
                             );
                         })}
