@@ -116,7 +116,7 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
     }, [isFormOpen]);
 
     React.useEffect(() => {
-        if (!isOpen || !isFormOpen || !turnstileRef.current || widgetIdRef.current) {
+        if (!isOpen || !isFormOpen || widgetIdRef.current) {
             return;
         }
 
@@ -387,7 +387,6 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
 
                                     <PhotoProvider>
                                         {storiesQuery.data?.map((story) => {
-                                            const [primaryImage, ...secondaryImages] = story.images;
                                             let deleteButtonLabel = 'Видалити';
 
                                             if (deletingStoryId === story.id) {
@@ -434,40 +433,24 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
                                                     </div>
                                                     <p>{story.storyText}</p>
 
-                                                    {primaryImage ? (
-                                                        <div className={s.storyGallery}>
-                                                            <PhotoView src={primaryImage.publicUrl}>
-                                                                <button className={s.storyImagePrimary} type="button">
-                                                                    <img
-                                                                        src={primaryImage.publicUrl}
-                                                                        alt={`Фото до історії ${story.authorName}`}
-                                                                    />
-                                                                </button>
-                                                            </PhotoView>
-
-                                                            {secondaryImages.length > 0 ? (
-                                                                <div className={s.storyImageThumbs}>
-                                                                    {secondaryImages.map((image) => {
-                                                                        return (
-                                                                            <PhotoView
-                                                                                key={image.id}
-                                                                                src={image.publicUrl}
+                                                    {story.images.length > 0 ? (
+                                                        <ul className={s.storyGallery} aria-label="Фото до історії">
+                                                            {story.images.map((image, imageIndex) => {
+                                                                return (
+                                                                    <li key={image.id} className={s.storyGalleryItem}>
+                                                                        <PhotoView src={image.publicUrl}>
+                                                                            <button
+                                                                                className={s.storyImageThumb}
+                                                                                type="button"
+                                                                                aria-label={`Відкрити фото ${imageIndex + 1} до історії ${story.authorName}`}
                                                                             >
-                                                                                <button
-                                                                                    className={s.storyImageThumb}
-                                                                                    type="button"
-                                                                                >
-                                                                                    <img
-                                                                                        src={image.publicUrl}
-                                                                                        alt={`Фото до історії ${story.authorName}`}
-                                                                                    />
-                                                                                </button>
-                                                                            </PhotoView>
-                                                                        );
-                                                                    })}
-                                                                </div>
-                                                            ) : null}
-                                                        </div>
+                                                                                <img src={image.publicUrl} alt="" />
+                                                                            </button>
+                                                                        </PhotoView>
+                                                                    </li>
+                                                                );
+                                                            })}
+                                                        </ul>
                                                     ) : null}
                                                 </article>
                                             );

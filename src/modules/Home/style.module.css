@@ -162,14 +162,12 @@
 }
 
 .primaryCta {
-    border: 1px solid var(--timeline-border-strong) !important;
-    background: linear-gradient(135deg, var(--timeline-ink) 0%, var(--timeline-accent) 100%) !important;
     box-shadow: 0 18px 40px color-mix(in srgb, var(--timeline-accent) 24%, transparent);
     color: var(--color-white-100) !important;
 }
 
 .primaryCta:hover {
-    background: linear-gradient(135deg, var(--color-dark-600) 0%, var(--timeline-accent-strong) 100%) !important;
+    background: var(--color-danger) !important;
 }
 
 .secondaryCta {
@@ -838,6 +836,16 @@
     z-index: 40;
     background: color-mix(in srgb, var(--color-dark-1000) 18%, transparent);
     backdrop-filter: blur(6px);
+    opacity: 1;
+    transition:
+        opacity 0.24s ease,
+        backdrop-filter 0.24s ease;
+}
+
+.drawerScrim[data-starting-style],
+.drawerScrim[data-ending-style] {
+    backdrop-filter: blur(0);
+    opacity: 0;
 }
 
 .drawerViewport {
@@ -845,6 +853,20 @@
     inset: 0;
     z-index: 41;
     pointer-events: none;
+
+    --timeline-ink: var(--color-dark-900);
+    --timeline-ink-soft: color-mix(in srgb, var(--color-dark-900) 76%, var(--color-text-secondary));
+    --timeline-muted: var(--color-text-secondary);
+    --timeline-muted-strong: color-mix(in srgb, var(--color-text-secondary) 82%, var(--color-dark-900));
+    --timeline-accent: var(--color-primary);
+    --timeline-accent-strong: color-mix(in srgb, var(--color-primary) 84%, var(--color-dark-900));
+    --timeline-accent-soft: color-mix(in srgb, var(--color-primary) 12%, var(--color-white-100));
+    --timeline-blue: var(--color-surface-raised-hover);
+    --timeline-teal: color-mix(in srgb, var(--color-surface-raised-hover) 55%, var(--scrollbar-track-color));
+    --timeline-border: color-mix(in srgb, var(--color-border) 10%, transparent);
+    --timeline-border-strong: color-mix(in srgb, var(--color-border) 18%, transparent);
+    --timeline-glass: color-mix(in srgb, var(--color-white-100) 68%, transparent);
+    --timeline-glass-strong: color-mix(in srgb, var(--color-white-100) 86%, transparent);
 }
 
 .storyDrawer {
@@ -856,6 +878,18 @@
     width: min(27rem, calc(100% - 1rem));
     padding: 0.75rem;
     pointer-events: auto;
+    transform: translateX(0);
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: transform;
+}
+
+.storyDrawer[data-starting-style],
+.storyDrawer[data-ending-style] {
+    transform: translateX(calc(100% + 1rem));
+}
+
+.storyDrawer[data-swiping] {
+    transition: none;
 }
 
 .emptyStories {
@@ -948,44 +982,60 @@
 }
 
 .storyGallery {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
-.storyImagePrimary,
+.storyGalleryItem {
+    flex: 0 0 auto;
+}
+
 .storyImageThumb {
-    display: block;
-    width: 100%;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
     padding: 0;
-    border: 0;
-    border-radius: 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--timeline-accent) 18%, transparent);
+    border-radius: 0.625rem;
     background: var(--timeline-accent-soft);
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--timeline-shadow) 70%, transparent);
     cursor: zoom-in;
     overflow: hidden;
+    transition:
+        border-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
 }
 
-.storyImagePrimary img,
 .storyImageThumb img {
     display: block;
     width: 100%;
-    aspect-ratio: 4 / 3;
+    height: 100%;
     object-fit: cover;
     transition: transform 0.28s ease;
 }
 
-.storyImagePrimary:hover img,
+.storyImageThumb:hover {
+    border-color: color-mix(in srgb, var(--timeline-accent) 46%, transparent);
+    box-shadow: 0 10px 22px color-mix(in srgb, var(--timeline-accent) 18%, transparent);
+    transform: translateY(-1px);
+}
+
 .storyImageThumb:hover img {
-    transform: scale(1.035);
+    transform: scale(1.08);
 }
 
-.storyImageThumbs {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.5rem;
-}
-
-.storyImageThumb img {
-    aspect-ratio: 1;
+.storyImageThumb:focus-visible {
+    border-color: var(--timeline-accent);
+    box-shadow:
+        0 0 0 0.2rem color-mix(in srgb, var(--timeline-accent) 14%, transparent),
+        0 10px 22px color-mix(in srgb, var(--timeline-accent) 18%, transparent);
+    outline: none;
 }
 
 .storyForm {
@@ -1000,6 +1050,7 @@
     background: color-mix(in srgb, var(--color-white-100) 94%, transparent);
     box-shadow: 0 24px 80px color-mix(in srgb, var(--color-dark-1000) 18%, transparent);
     backdrop-filter: blur(22px);
+    max-height: 90vh;
 }
 
 .formHeader {
@@ -1423,6 +1474,11 @@
         width: 100%;
         height: min(86vh, 42rem);
         padding: 0.5rem;
+    }
+
+    .storyDrawer[data-starting-style],
+    .storyDrawer[data-ending-style] {
+        transform: translateY(calc(100% + 1rem));
     }
 
     .storyForm {
