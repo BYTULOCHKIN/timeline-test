@@ -436,7 +436,7 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
                             <div>
                                 <span className={s.sectionKicker}>{year}</span>
                                 <Dialog.Title id="stories-modal-title" className={s.modalTitle}>
-                                    Історії команди HomeNET
+                                    Історії команди HomeNet
                                 </Dialog.Title>
                             </div>
                             <Dialog.Close className={s.modalClose}>Закрити</Dialog.Close>

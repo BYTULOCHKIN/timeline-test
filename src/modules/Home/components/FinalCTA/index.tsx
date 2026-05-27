@@ -18,17 +18,18 @@ const FinalCTA: React.FC<FinalCTAProps> = ({ onRestart }) => {
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-                <div className={s.brandLockup} aria-label="HomeNET">
+                <div className={s.brandLockup} aria-label="HomeNet">
                     <img src={homenetMarkUrl} alt="" className={s.brandMark} />
-                    <span>HomeNET</span>
+                    <span>HomeNet</span>
                 </div>
                 <span className={s.sectionKicker}>Наступне десятиліття</span>
                 <Typography id="final-cta-title" variant="heading-2xl" className={s.finalTitle}>
-                    Побудовано для наступних 10 років звʼязку.
+                    Наступний крок — 300 000 абонентів і нові регіони покриття.
                 </Typography>
                 <Typography variant="body-md" className={s.finalText}>
-                    ФЕЙК ДАНІ ПОТРІБНО ЗАМІНИТИ НА РЕАЛЬНО. Дякуємо що стали частиною нашої історії. Ми з нетерпінням
-                    чекаємо на те, що принесе наступне десятиліття!!!!!.
+                    HomeNet планує розширення у Рівненській, Хмельницькій і Житомирській областях, повернення на
+                    Херсонщину та розвиток корпоративних послуг із SLA, DDoS-захистом, виділеними каналами й
+                    аутсорсинговим контакт-центром.
                 </Typography>
                 <div className={s.finalActions}>
                     <Button className={s.primaryCta} onClick={onRestart}>

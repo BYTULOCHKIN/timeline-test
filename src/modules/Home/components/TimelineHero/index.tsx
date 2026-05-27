@@ -9,9 +9,9 @@ type TimelineHeroProps = {
 };
 
 const heroStats = [
-    { value: '10', label: 'років розвитку локального звʼязку' },
-    { value: '250 тис.+', label: 'активних абонентів.' },
-    { value: '30 тис км.', label: 'довжина мережі' },
+    { value: '250 тис.+', label: 'абонентів у регіонах України' },
+    { value: '20 тис. км', label: 'власної мережевої інфраструктури' },
+    { value: '1000+', label: 'населених пунктів у зоні покриття' },
 ];
 
 const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
@@ -23,23 +23,23 @@ const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-                <div className={s.brandLockup} aria-label="HomeNET">
+                <div className={s.brandLockup} aria-label="HomeNet">
                     <img src={homenetMarkUrl} alt="" className={s.brandMark} />
-                    <span>HomeNET</span>
+                    <span>HomeNet</span>
                 </div>
-                <div className={s.eyebrow}>Засновано у 2016 · 10 років у 2026</div>
+                <div className={s.eyebrow}>Перезапуск у 2016 · ціль 2026</div>
                 <Typography id="timeline-hero-title" variant="heading-3xl" className={s.heroTitle}>
-                    Десятиліття швидшого, якіснішого, потужнішого інтернету.
+                    HomeNet там, де великий звʼязок зазвичай не ризикує.
                 </Typography>
                 <Typography variant="body-lg" className={s.heroText}>
-                    Дослідіть ключові етапи HomeNET: від районного запуску до стійкої оптичної мережі для дому, бізнесу
-                    й міста.
+                    Таймлайн про шлях HomeNet від регіонального перезапуску до національного оператора фіксованого
+                    інтернету для приватного сектору, малих міст, сіл, бізнесу та громад.
                 </Typography>
                 <div className={s.heroActions}>
                     <Button className={s.primaryCta} onClick={onExplore}>
                         Переглянути таймлайн
                     </Button>
-                    <span className={s.heroHint}>Історія HomeNET 2016-2026</span>
+                    <span className={s.heroHint}>Історія HomeNet 2016-2026</span>
                 </div>
             </motion.div>
 
@@ -61,8 +61,8 @@ const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
                     <small>років</small>
                 </div>
                 <div className={s.signalCard}>
-                    <strong>99.95%</strong>
-                    <span>ціль аптайму модернізованої мережі</span>
+                    <strong>97%</strong>
+                    <span>мережі побудовано на PON-технології</span>
                 </div>
             </motion.div>
 

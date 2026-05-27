@@ -15,7 +15,7 @@ const TimelineFilters: React.FC<TimelineFiltersProps> = ({ activeTag, tags, onTa
             <div>
                 <span className={s.sectionKicker}>Фільтр за категорією</span>
                 <h2 id="timeline-filters-title" className={s.sectionTitle}>
-                    Перегляньте шлях HomeNET за напрямами розвитку.
+                    Перегляньте шлях HomeNet за напрямами розвитку.
                 </h2>
             </div>
             <div className={s.filterList} role="list" aria-label="Категорії таймлайну">

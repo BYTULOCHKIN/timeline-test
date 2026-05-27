@@ -44,7 +44,7 @@ const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCar
                         className={s.milestoneImage}
                         style={{ backgroundImage: milestone.image }}
                         role="img"
-                        aria-label={`Візуальний плейсхолдер події: ${milestone.title}`}
+                        aria-label={`Візуалізація події: ${milestone.title}`}
                     >
                         <div className={s.imageGrid} />
                         <span>{milestone.year}</span>
