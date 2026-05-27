@@ -11,7 +11,7 @@ type YearNavigatorProps = {
 
 const YearNavigator: React.FC<YearNavigatorProps> = ({ years, activeYear, availableYears, onYearSelect }) => {
     return (
-        <nav className={s.yearNav} aria-label="Timeline years">
+        <nav className={s.yearNav} aria-label="Роки таймлайну">
             <div className={s.yearNavScroller}>
                 {years.map((year) => {
                     const isActive = activeYear === year;

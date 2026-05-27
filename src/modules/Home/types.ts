@@ -10,4 +10,4 @@ export type Milestone = {
     image: string;
 };
 
-export type TimelineFilter = 'All' | Milestone['tags'][number];
+export type TimelineFilter = 'Усі' | Milestone['tags'][number];

@@ -42,7 +42,7 @@ const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCar
                         className={s.milestoneImage}
                         style={{ backgroundImage: milestone.image }}
                         role="img"
-                        aria-label={`${milestone.title} visual placeholder`}
+                        aria-label={`Візуальний плейсхолдер події: ${milestone.title}`}
                     >
                         <div className={s.imageGrid} />
                         <span>{milestone.year}</span>
@@ -51,7 +51,7 @@ const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCar
                     <div className={s.milestoneBody}>
                         <div className={s.milestoneHeader}>
                             <span className={s.yearPill}>{milestone.year}</span>
-                            <div className={s.tagList} aria-label={`${milestone.year} categories`}>
+                            <div className={s.tagList} aria-label={`Категорії ${milestone.year} року`}>
                                 {milestone.tags.map((tag) => {
                                     return (
                                         <span key={tag} className={s.tag}>

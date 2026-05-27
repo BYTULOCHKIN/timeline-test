@@ -1,3 +1,4 @@
+import homenetMarkUrl from '@/icons/homenet-mark.svg';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/Button/Button';
 import Typography from '@/components/Typography/Typography';
@@ -8,9 +9,9 @@ type TimelineHeroProps = {
 };
 
 const heroStats = [
-    { value: '10', label: 'years building local connectivity' },
-    { value: '78k+', label: 'mock connected customers' },
-    { value: '610 km', label: 'mock fiber routes' },
+    { value: '10', label: 'років розвитку локального звʼязку' },
+    { value: '78 тис.+', label: 'умовних підключених клієнтів' },
+    { value: '610 км', label: 'умовних оптичних маршрутів' },
 ];
 
 const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
@@ -22,19 +23,23 @@ const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-                <div className={s.eyebrow}>Founded in 2016 · Celebrating 10 years in 2026</div>
+                <div className={s.brandLockup} aria-label="HomeNET">
+                    <img src={homenetMarkUrl} alt="" className={s.brandMark} />
+                    <span>HomeNET</span>
+                </div>
+                <div className={s.eyebrow}>Засновано у 2016 · 10 років у 2026</div>
                 <Typography id="timeline-hero-title" variant="heading-3xl" className={s.heroTitle}>
-                    A decade of faster, calmer internet.
+                    Десятиліття швидшого, спокійнішого інтернету.
                 </Typography>
                 <Typography variant="body-lg" className={s.heroText}>
-                    Explore the milestones of a modern Internet Service Provider as it grows from a neighborhood launch
-                    into a resilient fiber-first network.
+                    Дослідіть ключові етапи HomeNET: від районного запуску до стійкої оптичної мережі для дому, бізнесу
+                    й міста.
                 </Typography>
                 <div className={s.heroActions}>
                     <Button className={s.primaryCta} onClick={onExplore}>
-                        Explore timeline
+                        Переглянути таймлайн
                     </Button>
-                    <span className={s.heroHint}>2016-2026 company journey</span>
+                    <span className={s.heroHint}>Історія HomeNET 2016-2026</span>
                 </div>
             </motion.div>
 
@@ -51,12 +56,13 @@ const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
                     <span />
                 </div>
                 <div className={s.anniversaryMark}>
+                    <img src={homenetMarkUrl} alt="" className={s.anniversaryLogo} />
                     <span>10</span>
-                    <small>years</small>
+                    <small>років</small>
                 </div>
                 <div className={s.signalCard}>
                     <strong>99.95%</strong>
-                    <span>modernized network uptime target</span>
+                    <span>ціль аптайму модернізованої мережі</span>
                 </div>
             </motion.div>
 

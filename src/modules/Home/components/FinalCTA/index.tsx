@@ -1,3 +1,4 @@
+import homenetMarkUrl from '@/icons/homenet-mark.svg';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/Button/Button';
 import Typography from '@/components/Typography/Typography';
@@ -17,17 +18,21 @@ const FinalCTA: React.FC<FinalCTAProps> = ({ onRestart }) => {
                 viewport={{ once: true, amount: 0.4 }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
-                <span className={s.sectionKicker}>Next decade</span>
+                <div className={s.brandLockup} aria-label="HomeNET">
+                    <img src={homenetMarkUrl} alt="" className={s.brandMark} />
+                    <span>HomeNET</span>
+                </div>
+                <span className={s.sectionKicker}>Наступне десятиліття</span>
                 <Typography id="final-cta-title" variant="heading-2xl" className={s.finalTitle}>
-                    Built for the next 10 years of connectivity.
+                    Побудовано для наступних 10 років звʼязку.
                 </Typography>
                 <Typography variant="body-md" className={s.finalText}>
-                    Replace the mock milestones with real company data, customer photos, and verified network metrics
-                    when the anniversary campaign is ready.
+                    ФЕЙК ДАНІ ПОТРІБНО ЗАМІНИТИ НА РЕАЛЬНО. Дякуємо що стали частиною нашої історії. Ми з нетерпінням
+                    чекаємо на те, що принесе наступне десятиліття!!!!!.
                 </Typography>
                 <div className={s.finalActions}>
                     <Button className={s.primaryCta} onClick={onRestart}>
-                        Back to 2016
+                        Повернутись до 2016
                     </Button>
                     <Button
                         className={s.secondaryCta}
@@ -36,7 +41,7 @@ const FinalCTA: React.FC<FinalCTAProps> = ({ onRestart }) => {
                             window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
                     >
-                        Return to top
+                        Нагору
                     </Button>
                 </div>
             </motion.div>

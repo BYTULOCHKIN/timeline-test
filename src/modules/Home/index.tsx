@@ -75,14 +75,14 @@ const Home: React.FC = () => {
                     viewport={{ once: true, amount: 0.35 }}
                     transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
                 >
-                    <span className={s.sectionKicker}>Company journey</span>
+                    <span className={s.sectionKicker}>Шлях компанії</span>
                     <h2 id="journey-intro-title" className={s.introTitle}>
-                        From first neighborhood links to a future-ready fiber platform.
+                        Від перших районних підключень до fiber-платформи, готової до майбутнього.
                     </h2>
                     <p className={s.introText}>
-                        This timeline is structured around replaceable data, so campaign teams can move from mock
-                        milestones to verified launch dates, real metrics, and production media without changing the
-                        experience layer.
+                        Цей таймлайн побудований навколо змінних даних: команді буде легко замінити тестові події на
+                        підтверджені дати запусків, реальні метрики HomeNET і продакшн-медіа без переписування
+                        інтерфейсу.
                     </p>
                 </motion.div>
             </section>

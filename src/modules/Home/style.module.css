@@ -89,6 +89,25 @@
     align-items: flex-start;
 }
 
+.brandLockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    color: var(--timeline-ink);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1;
+}
+
+.brandMark {
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    filter: drop-shadow(0 12px 24px color-mix(in srgb, var(--timeline-accent) 22%, transparent));
+}
+
 .eyebrow,
 .sectionKicker {
     display: inline-flex;
@@ -266,6 +285,13 @@
     font-weight: 700;
     letter-spacing: 0;
     line-height: 0.9;
+}
+
+.anniversaryLogo {
+    width: 4.5rem;
+    height: 4.5rem;
+    margin-bottom: 0.25rem;
+    filter: drop-shadow(0 18px 32px color-mix(in srgb, var(--timeline-accent) 24%, transparent));
 }
 
 .anniversaryMark small {
@@ -847,6 +873,11 @@
         font-size: 6rem;
     }
 
+    .anniversaryLogo {
+        width: 3.5rem;
+        height: 3.5rem;
+    }
+
     .signalCard {
         max-width: 11.5rem;
     }
@@ -975,6 +1006,11 @@
 
     .anniversaryMark span {
         font-size: 4.75rem;
+    }
+
+    .anniversaryLogo {
+        width: 3rem;
+        height: 3rem;
     }
 
     .signalCard {

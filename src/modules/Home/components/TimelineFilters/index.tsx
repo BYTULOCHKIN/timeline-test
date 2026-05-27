@@ -13,12 +13,12 @@ const TimelineFilters: React.FC<TimelineFiltersProps> = ({ activeTag, tags, onTa
     return (
         <section className={s.filtersSection} aria-labelledby="timeline-filters-title">
             <div>
-                <span className={s.sectionKicker}>Explore by category</span>
+                <span className={s.sectionKicker}>Фільтр за категорією</span>
                 <h2 id="timeline-filters-title" className={s.sectionTitle}>
-                    Filter the journey by what changed.
+                    Перегляньте шлях HomeNET за напрямами розвитку.
                 </h2>
             </div>
-            <div className={s.filterList} role="list" aria-label="Timeline categories">
+            <div className={s.filterList} role="list" aria-label="Категорії таймлайну">
                 {tags.map((tag) => {
                     const isActive = activeTag === tag;
 

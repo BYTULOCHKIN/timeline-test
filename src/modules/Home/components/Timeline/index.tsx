@@ -91,13 +91,13 @@ const Timeline: React.FC<TimelineProps> = ({ milestones, activeYear, onActiveYea
     return (
         <section ref={sectionRef} id="timeline" className={s.timelineSection} aria-labelledby="timeline-title">
             <div className={s.timelineIntro}>
-                <span className={s.sectionKicker}>Milestone archive</span>
+                <span className={s.sectionKicker}>Архів ключових подій</span>
                 <Typography id="timeline-title" variant="heading-2xl" className={s.sectionTitle}>
-                    Eleven chapters, one network getting stronger every year.
+                    Одинадцять розділів і одна мережа, що щороку стає сильнішою.
                 </Typography>
                 <Typography variant="body-md" className={s.sectionText}>
-                    Scroll through the timeline to see the active year update, or use the compact year navigator to jump
-                    directly to a milestone.
+                    Скрольте таймлайн, щоб активний рік оновлювався автоматично, або використовуйте компактну навігацію
+                    за роками для швидкого переходу.
                 </Typography>
             </div>
 
