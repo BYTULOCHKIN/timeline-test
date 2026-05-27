@@ -1,7 +1,6 @@
 import React from 'react';
-import { Drawer } from '@base-ui/react/drawer';
+import { Dialog } from '@base-ui/react/dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import {
@@ -11,7 +10,6 @@ import {
 } from '@/services/userStories/queries';
 import { userStoriesKeys } from '@/services/userStories/queryKeys';
 import { Button } from '@/components/Button/Button';
-import Typography from '@/components/Typography/Typography';
 import s from '../../style.module.css';
 
 import 'react-photo-view/dist/react-photo-view.css';
@@ -52,11 +50,35 @@ const MAX_FILES = 3;
 const MAX_FILE_SIZE = 3 * 1024 * 1024;
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
+let turnstileScriptPromise: Promise<void> | null = null;
+
 const loadTurnstileScript = () => {
+    if (window.turnstile) {
+        return Promise.resolve();
+    }
+
     const existingScript = document.querySelector<HTMLScriptElement>('script[data-turnstile-script]');
 
     if (existingScript) {
-        return;
+        return (
+            turnstileScriptPromise ??
+            new Promise<void>((resolve, reject) => {
+                existingScript.addEventListener(
+                    'load',
+                    () => {
+                        resolve();
+                    },
+                    { once: true }
+                );
+                existingScript.addEventListener(
+                    'error',
+                    () => {
+                        reject(new Error('Turnstile script failed to load'));
+                    },
+                    { once: true }
+                );
+            })
+        );
     }
 
     const script = document.createElement('script');
@@ -64,11 +86,62 @@ const loadTurnstileScript = () => {
     script.async = true;
     script.defer = true;
     script.dataset.turnstileScript = 'true';
+
+    turnstileScriptPromise = new Promise<void>((resolve, reject) => {
+        script.addEventListener(
+            'load',
+            () => {
+                resolve();
+            },
+            { once: true }
+        );
+        script.addEventListener(
+            'error',
+            () => {
+                reject(new Error('Turnstile script failed to load'));
+            },
+            { once: true }
+        );
+    });
+
     document.head.append(script);
+
+    return turnstileScriptPromise;
 };
 
 const getFirstErrorMessage = (errors: Partial<Record<keyof StoryFormValues, { message?: string }>>) => {
     return errors.authorName?.message ?? errors.storyText?.message ?? errors.authorRole?.message ?? '';
+};
+
+const restoreDocumentScroll = () => {
+    const html = document.documentElement;
+    const body = document.body;
+    const hasScrollLock =
+        html.hasAttribute('data-base-ui-scroll-locked') ||
+        html.style.overflowY === 'hidden' ||
+        html.style.overflowX === 'hidden' ||
+        body.style.overflow === 'hidden' ||
+        body.style.overflowY === 'hidden' ||
+        body.style.overflowX === 'hidden';
+
+    if (!hasScrollLock || document.querySelector('[role="dialog"][data-open]')) {
+        return;
+    }
+
+    html.removeAttribute('data-base-ui-scroll-locked');
+    html.style.overflowY = '';
+    html.style.overflowX = '';
+    html.style.scrollbarGutter = '';
+    html.style.scrollBehavior = '';
+
+    body.style.position = '';
+    body.style.height = '';
+    body.style.width = '';
+    body.style.boxSizing = '';
+    body.style.overflow = '';
+    body.style.overflowY = '';
+    body.style.overflowX = '';
+    body.style.scrollBehavior = '';
 };
 
 const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) => {
@@ -77,6 +150,7 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
     const widgetIdRef = React.useRef<string | null>(null);
     const formErrorRef = React.useRef<HTMLParagraphElement | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
+    const isPhotoViewerOpenRef = React.useRef(false);
     const [images, setImages] = React.useState<File[]>([]);
     const [turnstileToken, setTurnstileToken] = React.useState('');
     const [formError, setFormError] = React.useState('');
@@ -108,27 +182,39 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
     const visibleFormError = formError || getFirstErrorMessage(errors);
 
     React.useEffect(() => {
-        if (!isFormOpen) {
-            return;
-        }
-
-        loadTurnstileScript();
-    }, [isFormOpen]);
-
-    React.useEffect(() => {
         if (!isOpen || !isFormOpen || widgetIdRef.current) {
             return;
         }
 
-        let intervalId: number | null = null;
+        let isMounted = true;
 
-        const renderWidget = () => {
-            if (!window.turnstile || !turnstileRef.current || widgetIdRef.current) {
+        const renderWidget = async () => {
+            const sitekey = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
+
+            if (!sitekey) {
+                setFormError('Не налаштовано ключ Cloudflare Turnstile.');
                 return;
             }
 
+            try {
+                await loadTurnstileScript();
+            } catch {
+                if (isMounted) {
+                    setFormError(
+                        'Не вдалося завантажити Cloudflare Turnstile. Перевірте зʼєднання та спробуйте ще раз.'
+                    );
+                }
+
+                return;
+            }
+
+            if (!isMounted || !window.turnstile || !turnstileRef.current || widgetIdRef.current) {
+                return;
+            }
+
+            turnstileRef.current.innerHTML = '';
             widgetIdRef.current = window.turnstile.render(turnstileRef.current, {
-                sitekey: import.meta.env.VITE_TURNSTILE_SITE_KEY,
+                sitekey,
                 callback(token) {
                     setTurnstileToken(token);
                     setFormError('');
@@ -143,16 +229,10 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
             });
         };
 
-        renderWidget();
-
-        if (!widgetIdRef.current) {
-            intervalId = window.setInterval(renderWidget, 250);
-        }
+        void renderWidget();
 
         return () => {
-            if (intervalId) {
-                window.clearInterval(intervalId);
-            }
+            isMounted = false;
 
             if (widgetIdRef.current && window.turnstile) {
                 window.turnstile.remove(widgetIdRef.current);
@@ -161,25 +241,6 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
             widgetIdRef.current = null;
         };
     }, [isFormOpen, isOpen]);
-
-    React.useEffect(() => {
-        if (!isOpen) {
-            return;
-        }
-
-        const onKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                onClose();
-                setIsFormOpen(false);
-            }
-        };
-
-        document.addEventListener('keydown', onKeyDown);
-
-        return () => {
-            document.removeEventListener('keydown', onKeyDown);
-        };
-    }, [isOpen, onClose]);
 
     const showFormError = React.useCallback((message: string) => {
         setFormError(message);
@@ -213,6 +274,24 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
         },
         [resetForm]
     );
+
+    React.useEffect(() => {
+        if (!isOpen) {
+            onFormOpenChange(false);
+        }
+    }, [isOpen, onFormOpenChange]);
+
+    React.useEffect(() => {
+        if (isOpen || isFormOpen) {
+            return undefined;
+        }
+
+        const timeoutId = window.setTimeout(restoreDocumentScroll, 400);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+        };
+    }, [isFormOpen, isOpen]);
 
     const onFilesChange = React.useCallback(
         (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -323,161 +402,170 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
         [confirmingStoryId, deleteUserStoryAsync, queryClient, year]
     );
 
+    const closeModal = React.useCallback(() => {
+        onFormOpenChange(false);
+        onClose();
+    }, [onClose, onFormOpenChange]);
+
+    const onModalOpenChange = React.useCallback<NonNullable<React.ComponentProps<typeof Dialog.Root>['onOpenChange']>>(
+        (nextOpen, eventDetails) => {
+            if (!nextOpen && eventDetails.reason === 'escape-key' && isPhotoViewerOpenRef.current) {
+                eventDetails.allowPropagation();
+                eventDetails.cancel();
+                return;
+            }
+
+            if (!nextOpen) {
+                closeModal();
+            }
+        },
+        [closeModal]
+    );
+
+    const onPhotoViewerVisibleChange = React.useCallback((visible: boolean) => {
+        isPhotoViewerOpenRef.current = visible;
+    }, []);
+
     return (
-        <AnimatePresence>
-            {isOpen && year ? (
-                <motion.div
-                    className={s.modalOverlay}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    role="presentation"
-                    onMouseDown={(event) => {
-                        if (event.target === event.currentTarget) {
-                            onClose();
-                            onFormOpenChange(false);
-                        }
-                    }}
-                >
-                    <motion.section
-                        className={s.storiesModal}
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="stories-modal-title"
-                        initial={{ opacity: 0, y: 24, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 18, scale: 0.98 }}
-                        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                    >
+        <Dialog.Root open={isOpen && Boolean(year)} onOpenChange={onModalOpenChange}>
+            <Dialog.Portal>
+                <Dialog.Backdrop className={s.modalOverlay} />
+                <Dialog.Viewport className={s.modalViewport}>
+                    <Dialog.Popup className={s.storiesModal}>
                         <header className={s.modalHeader}>
                             <div>
                                 <span className={s.sectionKicker}>{year}</span>
-                                <Typography id="stories-modal-title" variant="heading-lg" className={s.modalTitle}>
+                                <Dialog.Title id="stories-modal-title" className={s.modalTitle}>
                                     Історії команди HomeNET
-                                </Typography>
+                                </Dialog.Title>
                             </div>
-                            <Button className={s.modalClose} variant="ghost" size="medium" onClick={onClose}>
-                                Закрити
-                            </Button>
+                            <Dialog.Close className={s.modalClose}>Закрити</Dialog.Close>
                         </header>
 
-                        <Drawer.Root open={isFormOpen} onOpenChange={onFormOpenChange} swipeDirection="right">
-                            <Drawer.Trigger className={s.drawerTrigger}>Додати історію</Drawer.Trigger>
+                        <Dialog.Root open={isFormOpen} modal="trap-focus" onOpenChange={onFormOpenChange}>
+                            <Dialog.Trigger className={s.formDialogTrigger}>Додати історію</Dialog.Trigger>
 
                             <div className={s.modalGrid}>
                                 <section className={s.storiesList} aria-label={`Історії за ${year} рік`}>
-                                    {storiesQuery.isLoading ? (
-                                        <p className={s.emptyStories}>Завантажуємо історії...</p>
-                                    ) : null}
-                                    {storiesQuery.isError ? (
-                                        <p className={s.formError}>
-                                            Не вдалося завантажити історії. Спробуйте пізніше.
-                                        </p>
-                                    ) : null}
-                                    {deleteError ? (
-                                        <p className={s.formError} aria-live="polite">
-                                            {deleteError}
-                                        </p>
-                                    ) : null}
-                                    {storiesQuery.data?.length === 0 ? (
-                                        <p className={s.emptyStories}>
-                                            Ще немає історій за цей рік. Додайте перший спогад команди.
-                                        </p>
-                                    ) : null}
+                                    <div className={s.storiesListInner}>
+                                        {storiesQuery.isLoading ? (
+                                            <p className={s.emptyStories}>Завантажуємо історії...</p>
+                                        ) : null}
+                                        {storiesQuery.isError ? (
+                                            <p className={s.formError}>
+                                                Не вдалося завантажити історії. Спробуйте пізніше.
+                                            </p>
+                                        ) : null}
+                                        {deleteError ? (
+                                            <p className={s.formError} aria-live="polite">
+                                                {deleteError}
+                                            </p>
+                                        ) : null}
+                                        {storiesQuery.data?.length === 0 ? (
+                                            <p className={s.emptyStories}>
+                                                Ще немає історій за цей рік. Додайте перший спогад команди.
+                                            </p>
+                                        ) : null}
 
-                                    <PhotoProvider>
-                                        {storiesQuery.data?.map((story) => {
-                                            let deleteButtonLabel = 'Видалити';
+                                        <PhotoProvider onVisibleChange={onPhotoViewerVisibleChange}>
+                                            {storiesQuery.data?.map((story) => {
+                                                let deleteButtonLabel = 'Видалити';
 
-                                            if (deletingStoryId === story.id) {
-                                                deleteButtonLabel = 'Видаляємо...';
-                                            } else if (confirmingStoryId === story.id) {
-                                                deleteButtonLabel = 'Підтвердити';
-                                            }
+                                                if (deletingStoryId === story.id) {
+                                                    deleteButtonLabel = 'Видаляємо...';
+                                                } else if (confirmingStoryId === story.id) {
+                                                    deleteButtonLabel = 'Підтвердити';
+                                                }
 
-                                            return (
-                                                <article key={story.id} className={s.storyCard}>
-                                                    <div className={s.storyMetaRow}>
-                                                        <div className={s.storyAuthor}>
-                                                            <strong>{story.authorName}</strong>
-                                                            {story.authorRole ? <span>{story.authorRole}</span> : null}
-                                                        </div>
-
-                                                        {isAdminMode ? (
-                                                            <div className={s.storyActions}>
-                                                                <Button
-                                                                    className={s.deleteStoryButton}
-                                                                    variant="ghost"
-                                                                    size="small"
-                                                                    disabled={deletingStoryId === story.id}
-                                                                    onClick={() => {
-                                                                        void onDeleteStory(story.id);
-                                                                    }}
-                                                                >
-                                                                    {deleteButtonLabel}
-                                                                </Button>
-
-                                                                {confirmingStoryId === story.id ? (
-                                                                    <button
-                                                                        className={s.cancelDeleteButton}
-                                                                        type="button"
-                                                                        onClick={() => {
-                                                                            setConfirmingStoryId(null);
-                                                                        }}
-                                                                    >
-                                                                        Скасувати
-                                                                    </button>
+                                                return (
+                                                    <article key={story.id} className={s.storyCard}>
+                                                        <div className={s.storyMetaRow}>
+                                                            <div className={s.storyAuthor}>
+                                                                <strong>{story.authorName}</strong>
+                                                                {story.authorRole ? (
+                                                                    <span>{story.authorRole}</span>
                                                                 ) : null}
                                                             </div>
-                                                        ) : null}
-                                                    </div>
-                                                    <p>{story.storyText}</p>
 
-                                                    {story.images.length > 0 ? (
-                                                        <ul className={s.storyGallery} aria-label="Фото до історії">
-                                                            {story.images.map((image, imageIndex) => {
-                                                                return (
-                                                                    <li key={image.id} className={s.storyGalleryItem}>
-                                                                        <PhotoView src={image.publicUrl}>
-                                                                            <button
-                                                                                className={s.storyImageThumb}
-                                                                                type="button"
-                                                                                aria-label={`Відкрити фото ${imageIndex + 1} до історії ${story.authorName}`}
-                                                                            >
-                                                                                <img src={image.publicUrl} alt="" />
-                                                                            </button>
-                                                                        </PhotoView>
-                                                                    </li>
-                                                                );
-                                                            })}
-                                                        </ul>
-                                                    ) : null}
-                                                </article>
-                                            );
-                                        })}
-                                    </PhotoProvider>
+                                                            {isAdminMode ? (
+                                                                <div className={s.storyActions}>
+                                                                    <Button
+                                                                        className={s.deleteStoryButton}
+                                                                        variant="ghost"
+                                                                        size="small"
+                                                                        disabled={deletingStoryId === story.id}
+                                                                        onClick={() => {
+                                                                            void onDeleteStory(story.id);
+                                                                        }}
+                                                                    >
+                                                                        {deleteButtonLabel}
+                                                                    </Button>
+
+                                                                    {confirmingStoryId === story.id ? (
+                                                                        <button
+                                                                            className={s.cancelDeleteButton}
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                setConfirmingStoryId(null);
+                                                                            }}
+                                                                        >
+                                                                            Скасувати
+                                                                        </button>
+                                                                    ) : null}
+                                                                </div>
+                                                            ) : null}
+                                                        </div>
+                                                        <p>{story.storyText}</p>
+
+                                                        {story.images.length > 0 ? (
+                                                            <ul className={s.storyGallery} aria-label="Фото до історії">
+                                                                {story.images.map((image, imageIndex) => {
+                                                                    return (
+                                                                        <li
+                                                                            key={image.id}
+                                                                            className={s.storyGalleryItem}
+                                                                        >
+                                                                            <PhotoView src={image.publicUrl}>
+                                                                                <button
+                                                                                    className={s.storyImageThumb}
+                                                                                    type="button"
+                                                                                    aria-label={`Відкрити фото ${imageIndex + 1} до історії ${story.authorName}`}
+                                                                                >
+                                                                                    <img src={image.publicUrl} alt="" />
+                                                                                </button>
+                                                                            </PhotoView>
+                                                                        </li>
+                                                                    );
+                                                                })}
+                                                            </ul>
+                                                        ) : null}
+                                                    </article>
+                                                );
+                                            })}
+                                        </PhotoProvider>
+                                    </div>
                                 </section>
                             </div>
 
-                            <Drawer.Portal>
-                                <Drawer.Backdrop className={s.drawerScrim} />
-                                <Drawer.Viewport className={s.drawerViewport}>
-                                    <Drawer.Popup className={s.storyDrawer}>
-                                        <Drawer.Content>
-                                            <form className={s.storyForm} noValidate onSubmit={submitForm}>
-                                                <div className={s.formHeader}>
-                                                    <div>
-                                                        <span className={s.sectionKicker}>{year}</span>
-                                                        <Drawer.Title className={s.formTitle}>
-                                                            Додати свою подію
-                                                        </Drawer.Title>
-                                                        <Drawer.Description className={s.formDescription}>
-                                                            Розкажіть коротку історію та додайте до 3 фото.
-                                                        </Drawer.Description>
-                                                    </div>
-                                                    <Drawer.Close className={s.formClose}>Закрити</Drawer.Close>
+                            <Dialog.Portal>
+                                <Dialog.Backdrop className={s.formDialogScrim} forceRender />
+                                <Dialog.Viewport className={s.formDialogViewport}>
+                                    <Dialog.Popup className={s.formDialog}>
+                                        <form className={s.storyForm} noValidate onSubmit={submitForm}>
+                                            <div className={s.formHeader}>
+                                                <div>
+                                                    <span className={s.sectionKicker}>{year}</span>
+                                                    <Dialog.Title className={s.formTitle}>
+                                                        Додати свою подію
+                                                    </Dialog.Title>
+                                                    <Dialog.Description className={s.formDescription}>
+                                                        Розкажіть коротку історію та додайте до 3 фото.
+                                                    </Dialog.Description>
                                                 </div>
+                                                <Dialog.Close className={s.formClose}>Закрити</Dialog.Close>
+                                            </div>
 
+                                            <div className={s.formBody}>
                                                 {visibleFormError ? (
                                                     <p ref={formErrorRef} className={s.formError} aria-live="polite">
                                                         {visibleFormError}
@@ -555,20 +643,22 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
                                                 ) : null}
 
                                                 <div ref={turnstileRef} className={s.turnstileBox} />
+                                            </div>
 
+                                            <div className={s.formFooter}>
                                                 <Button className={s.primaryCta} type="submit" disabled={isPending}>
                                                     {isPending ? 'Зберігаємо...' : 'Опублікувати історію'}
                                                 </Button>
-                                            </form>
-                                        </Drawer.Content>
-                                    </Drawer.Popup>
-                                </Drawer.Viewport>
-                            </Drawer.Portal>
-                        </Drawer.Root>
-                    </motion.section>
-                </motion.div>
-            ) : null}
-        </AnimatePresence>
+                                            </div>
+                                        </form>
+                                    </Dialog.Popup>
+                                </Dialog.Viewport>
+                            </Dialog.Portal>
+                        </Dialog.Root>
+                    </Dialog.Popup>
+                </Dialog.Viewport>
+            </Dialog.Portal>
+        </Dialog.Root>
     );
 };
 
