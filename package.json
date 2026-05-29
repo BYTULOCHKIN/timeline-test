@@ -26,6 +26,7 @@
     "dependencies": {
         "@base-ui/react": "^1.2.0",
         "@csstools/postcss-global-data": "^4.0.0",
+        "@fontsource/montserrat": "^5.2.8",
         "@react-hookz/web": "^25.2.0",
         "@supabase/supabase-js": "^2.106.2",
         "@svg-use/react": "^1.1.0",
