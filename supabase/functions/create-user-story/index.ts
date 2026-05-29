@@ -6,7 +6,20 @@ const corsHeaders = {
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
-const ALLOWED_YEARS = new Set(['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024', '2025', '2026']);
+const ALLOWED_YEARS = new Set([
+    '2009',
+    '2016',
+    '2017',
+    '2018',
+    '2019',
+    '2020',
+    '2021',
+    '2022',
+    '2023',
+    '2024',
+    '2025',
+    '2026',
+]);
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const MAX_IMAGES = 3;
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
