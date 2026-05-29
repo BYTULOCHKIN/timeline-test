@@ -148,6 +148,16 @@ const restoreDocumentScroll = () => {
     body.style.scrollBehavior = '';
 };
 
+const preloadStoryImages = (stories: UserStory[]) => {
+    stories.forEach((story) => {
+        story.images.forEach((storyImage) => {
+            const image = new Image();
+            image.decoding = 'async';
+            image.src = storyImage.publicUrl;
+        });
+    });
+};
+
 const getStoryDeleteLabel = (storyId: string, deletingStoryId: string | null, confirmingStoryId: string | null) => {
     if (deletingStoryId === storyId) {
         return 'Видаляємо...';
@@ -206,7 +216,12 @@ const createStoryContentComponent = ({
         };
 
         return (
-            <div className={s.instagramStoryContent}>
+            <div
+                className={s.instagramStoryContent}
+                onDragStart={(event) => {
+                    event.preventDefault();
+                }}
+            >
                 <img className={s.instagramStoryImage} src={imageUrl} alt="" draggable={false} />
 
                 <div className={s.instagramStoryScrim} aria-hidden="true" />
@@ -611,6 +626,14 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
     const safeInitialUserIndex = Math.min(initialUserIndex, Math.max(storyUsers.length - 1, 0));
     const isEmptyStateOpen =
         isOpen && Boolean(year) && !shouldOpenForm && !storiesQuery.isLoading && storyUsers.length === 0;
+
+    React.useEffect(() => {
+        if (!isViewerOpen || !storiesQuery.data) {
+            return;
+        }
+
+        preloadStoryImages(storiesQuery.data);
+    }, [isViewerOpen, storiesQuery.data]);
 
     React.useEffect(() => {
         if (!isViewerOpen) {
