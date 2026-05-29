@@ -612,6 +612,36 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
     const isEmptyStateOpen =
         isOpen && Boolean(year) && !shouldOpenForm && !storiesQuery.isLoading && storyUsers.length === 0;
 
+    React.useEffect(() => {
+        if (!isViewerOpen) {
+            return undefined;
+        }
+
+        const closeFromViewerChrome = (event: Event) => {
+            const target = event.target;
+
+            if (!(target instanceof Element)) {
+                return;
+            }
+
+            if (!target.closest('.story-viewer-close, .story-viewer-overlay')) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+            onClose();
+        };
+
+        document.addEventListener('pointerdown', closeFromViewerChrome, true);
+        document.addEventListener('click', closeFromViewerChrome, true);
+
+        return () => {
+            document.removeEventListener('pointerdown', closeFromViewerChrome, true);
+            document.removeEventListener('click', closeFromViewerChrome, true);
+        };
+    }, [isViewerOpen, onClose]);
+
     return (
         <>
             <StoryViewer
