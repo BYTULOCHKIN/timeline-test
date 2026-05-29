@@ -1,7 +1,7 @@
 import type { Milestone } from '../../types';
 import React from 'react';
 import clsx from 'clsx';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import Typography from '@/components/Typography/Typography';
 import parentS from '../../style.module.css';
 import TimelineYearStories from '../TimelineYearStories';
@@ -17,12 +17,33 @@ type TimelineMilestoneCardProps = {
 
 const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCardProps>(
     ({ milestone, isActive, index, onYearStoriesOpen, onYearStoryAdd }, ref) => {
+        const articleRef = React.useRef<HTMLElement | null>(null);
         const metrics = Object.entries(milestone.metrics ?? {});
         const isMirrored = index % 2 === 1;
+        const isInView = useInView(articleRef, {
+            amount: 0.42,
+            margin: '-12% 0px -18% 0px',
+        });
+
+        const setArticleRef = React.useCallback(
+            (node: HTMLElement | null) => {
+                articleRef.current = node;
+
+                if (typeof ref === 'function') {
+                    ref(node);
+                    return;
+                }
+
+                if (ref) {
+                    ref.current = node;
+                }
+            },
+            [ref]
+        );
 
         return (
-            <motion.article
-                ref={ref}
+            <article
+                ref={setArticleRef}
                 id={`milestone-${milestone.year}`}
                 className={clsx(
                     parentS.milestone,
@@ -30,12 +51,6 @@ const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCar
                     isMirrored && parentS.milestoneMirrored
                 )}
                 aria-labelledby={`${milestone.id}-title`}
-                layout
-                initial={{ opacity: 0, y: 42, scale: 0.98 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 24, scale: 0.98 }}
-                viewport={{ once: false, amount: 0.34 }}
-                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
             >
                 <div className={parentS.timelineNode} aria-hidden="true">
                     <span>{milestone.year}</span>
@@ -47,8 +62,26 @@ const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCar
                         isActive && s.milestoneCardActive,
                         isMirrored && s.milestoneCardMirrored
                     )}
+                    initial={false}
+                    animate={
+                        isInView
+                            ? {
+                                  opacity: 1,
+                                  y: 0,
+                                  scale: 1,
+                              }
+                            : {
+                                  opacity: 0,
+                                  y: 36,
+                                  scale: 0.98,
+                              }
+                    }
                     whileHover={{ y: -6 }}
-                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    transition={{
+                        opacity: { duration: 0.32, ease: 'easeOut' },
+                        scale: { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
+                        y: { duration: 0.42, ease: [0.16, 1, 0.3, 1] },
+                    }}
                 >
                     {/* Image — full width, зверху */}
                     <div
@@ -108,7 +141,7 @@ const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCar
                     onStoriesOpen={onYearStoriesOpen}
                     onStoryAdd={onYearStoryAdd}
                 />
-            </motion.article>
+            </article>
         );
     }
 );
