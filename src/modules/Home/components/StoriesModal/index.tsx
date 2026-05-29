@@ -169,7 +169,7 @@ const createStoryContentComponent = ({
     deletingStoryId,
     confirmingStoryId,
     deleteError,
-    onDeleteStory,
+    onDeleteStory: handleDeleteStory,
     onCancelDelete,
 }: {
     story: UserStory;
@@ -183,7 +183,28 @@ const createStoryContentComponent = ({
     onDeleteStory: (_storyId: string) => void;
     onCancelDelete: () => void;
 }) => {
-    const StoryContent: React.FC<StoryItemControls> = () => {
+    const StoryContent: React.FC<StoryItemControls> = ({ pause, resume }) => {
+        'use no memo';
+
+        const isConfirmingDelete = confirmingStoryId === story.id;
+        const isDeletingStory = deletingStoryId === story.id;
+
+        React.useEffect(() => {
+            if (!isAdminMode || (!isConfirmingDelete && !isDeletingStory)) {
+                return undefined;
+            }
+
+            pause();
+
+            return () => {
+                resume();
+            };
+        }, [isConfirmingDelete, isDeletingStory, pause, resume]);
+
+        const stopViewerInteraction = (event: React.SyntheticEvent) => {
+            event.stopPropagation();
+        };
+
         return (
             <div className={s.instagramStoryContent}>
                 <img className={s.instagramStoryImage} src={imageUrl} alt="" draggable={false} />
@@ -216,12 +237,15 @@ const createStoryContentComponent = ({
                         <div className={s.storyActions}>
                             <Button
                                 className={s.deleteStoryButton}
+                                type="button"
                                 variant="ghost"
                                 size="small"
-                                disabled={deletingStoryId === story.id}
+                                disabled={isDeletingStory}
+                                onPointerDown={stopViewerInteraction}
+                                onPointerUp={stopViewerInteraction}
                                 onClick={(event) => {
                                     event.stopPropagation();
-                                    onDeleteStory(story.id);
+                                    handleDeleteStory(story.id);
                                 }}
                             >
                                 {getStoryDeleteLabel(story.id, deletingStoryId, confirmingStoryId)}
@@ -231,6 +255,8 @@ const createStoryContentComponent = ({
                                 <button
                                     className={s.cancelDeleteButton}
                                     type="button"
+                                    onPointerDown={stopViewerInteraction}
+                                    onPointerUp={stopViewerInteraction}
                                     onClick={(event) => {
                                         event.stopPropagation();
                                         onCancelDelete();
@@ -525,7 +551,7 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
 
     const storyUsers = React.useMemo<User[]>(() => {
         return (storiesQuery.data ?? []).map((story) => {
-            const fallbackImage = '/timeline-test/images/video_bg.png';
+            const fallbackImage = '/images/video_bg.png';
             const avatarUrl = story.images[0]?.publicUrl ?? fallbackImage;
 
             return {

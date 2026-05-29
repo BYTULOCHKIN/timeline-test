@@ -43,7 +43,7 @@ const TimelineYearStories: React.FC<TimelineYearStoriesProps> = ({
 
     const storyUsers = React.useMemo<User[]>(() => {
         return (storiesQuery.data ?? []).map((story) => {
-            const fallbackImage = '/timeline-test/images/video_bg.png';
+            const fallbackImage = '/images/video_bg.png';
 
             return {
                 id: story.id,

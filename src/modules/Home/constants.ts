@@ -26,7 +26,7 @@ export const MILESTONES: Milestone[] = [
             Підхід: 'власна мережа',
         },
         tags: ['Перезапуск', 'Регіони'],
-        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.28)), url("/timeline-test/images/Снимок экрана 2026-05-27 в 21.21.50.png")',
+        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.28)), url("/images/Снимок экрана 2026-05-27 в 21.21.50.png")',
     },
     {
         id: 'scale-model-2019',
@@ -40,7 +40,7 @@ export const MILESTONES: Milestone[] = [
             Інтеграція: 'єдині стандарти',
         },
         tags: ['Масштабування', 'Регіони'],
-        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.03), rgba(21, 31, 44, 0.32)), url("/timeline-test/images/1763375591981.jpeg")',
+        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.03), rgba(21, 31, 44, 0.32)), url("/images/1763375591981.jpeg")',
     },
     {
         id: 'critical-internet-2020',
@@ -54,7 +54,7 @@ export const MILESTONES: Milestone[] = [
             Пріоритет: 'стабільність',
         },
         tags: ['Стійкість', 'Регіони'],
-        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.3)), url("/timeline-test/images/video_bg.png")',
+        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.3)), url("/images/video_bg.png")',
     },
     {
         id: 'resilience-2022',
@@ -68,7 +68,7 @@ export const MILESTONES: Milestone[] = [
             Інциденти: '95% < доби',
         },
         tags: ['Оптика', 'Стійкість'],
-        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.32)), url("/timeline-test/images/1763375591833.jpeg")',
+        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.32)), url("/images/1763375591833.jpeg")',
     },
     {
         id: 'national-operator-2024',
@@ -82,7 +82,7 @@ export const MILESTONES: Milestone[] = [
             Покриття: '1000+ НП',
         },
         tags: ['Масштабування', 'Регіони'],
-        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.34)), url("/timeline-test/images/2026-05-27 21.00.05.jpg")',
+        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.34)), url("/images/2026-05-27 21.00.05.jpg")',
     },
     {
         id: 'communities-2025',
@@ -96,7 +96,7 @@ export const MILESTONES: Milestone[] = [
             Медицина: '35 установ',
         },
         tags: ['Громади', 'Стійкість'],
-        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.34)), url("/timeline-test/images/sandjary.jpg")',
+        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.04), rgba(21, 31, 44, 0.34)), url("/images/sandjary.jpg")',
     },
     {
         id: 'future-2026',
@@ -110,6 +110,6 @@ export const MILESTONES: Milestone[] = [
             Напрям: 'нові області',
         },
         tags: ['Майбутнє', 'Бізнес', 'Масштабування'],
-        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.03), rgba(21, 31, 44, 0.26)), url("/timeline-test/images/Снимок экрана 2026-05-27 в 21.22.36.png")',
+        image: 'linear-gradient(180deg, rgba(21, 31, 44, 0.03), rgba(21, 31, 44, 0.26)), url("/images/Снимок экрана 2026-05-27 в 21.22.36.png")',
     },
 ];

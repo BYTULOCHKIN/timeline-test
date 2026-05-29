@@ -89,18 +89,27 @@ Deno.serve(async (request) => {
                 return Boolean(path);
             });
 
-        if (storagePaths.length > 0) {
-            const { error: storageError } = await supabase.storage.from(BUCKET).remove(storagePaths);
+        const { error: deleteImagesError } = await supabase
+            .from('user_story_images')
+            .delete()
+            .eq('story_id', body.storyId);
 
-            if (storageError) {
-                return json({ message: storageError.message }, 500, request);
-            }
+        if (deleteImagesError) {
+            return json({ message: deleteImagesError.message }, 500, request);
         }
 
         const { error: deleteError } = await supabase.from('user_stories').delete().eq('id', body.storyId);
 
         if (deleteError) {
             return json({ message: deleteError.message }, 500, request);
+        }
+
+        if (storagePaths.length > 0) {
+            const { error: storageError } = await supabase.storage.from(BUCKET).remove(storagePaths);
+
+            if (storageError) {
+                return json({ ok: true, warning: storageError.message }, 200, request);
+            }
         }
 
         return json({ ok: true }, 200, request);
