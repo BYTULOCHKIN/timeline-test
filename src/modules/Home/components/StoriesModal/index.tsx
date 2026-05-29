@@ -1,8 +1,10 @@
+import type { StoryItemControls, User } from 'react-instagram-stories';
+import type { UserStory } from '@/services/userStories/types';
 import React from 'react';
 import { Dialog } from '@base-ui/react/dialog';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form';
-import { PhotoProvider, PhotoView } from 'react-photo-view';
+import { StoryViewer } from 'react-instagram-stories';
 import {
     createUserStoryMutationOptions,
     deleteUserStoryMutationOptions,
@@ -12,11 +14,13 @@ import { userStoriesKeys } from '@/services/userStories/queryKeys';
 import { Button } from '@/components/Button/Button';
 import s from '../../style.module.css';
 
-import 'react-photo-view/dist/react-photo-view.css';
+import 'react-instagram-stories/styles.css';
 
 type StoriesModalProps = {
     year: string | null;
     isOpen: boolean;
+    shouldOpenForm: boolean;
+    initialUserIndex: number;
     onClose: () => void;
 };
 
@@ -144,13 +148,113 @@ const restoreDocumentScroll = () => {
     body.style.scrollBehavior = '';
 };
 
-const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) => {
+const getStoryDeleteLabel = (storyId: string, deletingStoryId: string | null, confirmingStoryId: string | null) => {
+    if (deletingStoryId === storyId) {
+        return 'Видаляємо...';
+    }
+
+    if (confirmingStoryId === storyId) {
+        return 'Підтвердити';
+    }
+
+    return 'Видалити';
+};
+
+const createStoryContentComponent = ({
+    story,
+    imageUrl,
+    imageIndex,
+    imageCount,
+    isAdminMode,
+    deletingStoryId,
+    confirmingStoryId,
+    deleteError,
+    onDeleteStory,
+    onCancelDelete,
+}: {
+    story: UserStory;
+    imageUrl: string;
+    imageIndex: number;
+    imageCount: number;
+    isAdminMode: boolean;
+    deletingStoryId: string | null;
+    confirmingStoryId: string | null;
+    deleteError: string;
+    onDeleteStory: (_storyId: string) => void;
+    onCancelDelete: () => void;
+}) => {
+    const StoryContent: React.FC<StoryItemControls> = () => {
+        return (
+            <div className={s.instagramStoryContent}>
+                <img className={s.instagramStoryImage} src={imageUrl} alt="" draggable={false} />
+
+                <div className={s.instagramStoryScrim} aria-hidden="true" />
+
+                <div className={s.instagramStoryCaption}>
+                    <div className={s.instagramStoryMeta}>
+                        <div>
+                            <strong>{story.authorName}</strong>
+                            {story.authorRole ? <span>{story.authorRole}</span> : null}
+                        </div>
+
+                        {imageCount > 1 ? (
+                            <span>
+                                Фото {imageIndex + 1}/{imageCount}
+                            </span>
+                        ) : null}
+                    </div>
+
+                    <p>{story.storyText}</p>
+
+                    {deleteError ? (
+                        <p className={s.instagramStoryError} aria-live="polite">
+                            {deleteError}
+                        </p>
+                    ) : null}
+
+                    {isAdminMode ? (
+                        <div className={s.storyActions}>
+                            <Button
+                                className={s.deleteStoryButton}
+                                variant="ghost"
+                                size="small"
+                                disabled={deletingStoryId === story.id}
+                                onClick={(event) => {
+                                    event.stopPropagation();
+                                    onDeleteStory(story.id);
+                                }}
+                            >
+                                {getStoryDeleteLabel(story.id, deletingStoryId, confirmingStoryId)}
+                            </Button>
+
+                            {confirmingStoryId === story.id ? (
+                                <button
+                                    className={s.cancelDeleteButton}
+                                    type="button"
+                                    onClick={(event) => {
+                                        event.stopPropagation();
+                                        onCancelDelete();
+                                    }}
+                                >
+                                    Скасувати
+                                </button>
+                            ) : null}
+                        </div>
+                    ) : null}
+                </div>
+            </div>
+        );
+    };
+
+    return StoryContent;
+};
+
+const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenForm, initialUserIndex, onClose }) => {
     const queryClient = useQueryClient();
     const turnstileRef = React.useRef<HTMLDivElement | null>(null);
     const widgetIdRef = React.useRef<string | null>(null);
     const formErrorRef = React.useRef<HTMLParagraphElement | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement | null>(null);
-    const isPhotoViewerOpenRef = React.useRef(false);
     const [images, setImages] = React.useState<File[]>([]);
     const [turnstileToken, setTurnstileToken] = React.useState('');
     const [formError, setFormError] = React.useState('');
@@ -270,16 +374,32 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
 
             if (!nextOpen) {
                 resetForm();
+
+                if (shouldOpenForm && isOpen) {
+                    onClose();
+                }
             }
         },
-        [resetForm]
+        [isOpen, onClose, resetForm, shouldOpenForm]
     );
 
     React.useEffect(() => {
         if (!isOpen) {
-            onFormOpenChange(false);
+            setIsFormOpen(false);
+            resetForm();
         }
-    }, [isOpen, onFormOpenChange]);
+    }, [isOpen, resetForm]);
+
+    React.useEffect(() => {
+        if (isOpen && shouldOpenForm) {
+            setIsFormOpen(true);
+        }
+    }, [isOpen, shouldOpenForm, year]);
+
+    React.useEffect(() => {
+        setConfirmingStoryId(null);
+        setDeleteError('');
+    }, [year]);
 
     React.useEffect(() => {
         if (isOpen || isFormOpen) {
@@ -347,6 +467,7 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
                 await queryClient.invalidateQueries({ queryKey: userStoriesKeys.byYear(year) });
                 resetForm();
                 setIsFormOpen(false);
+                onClose();
             } catch (error) {
                 showFormError(error instanceof Error ? error.message : 'Не вдалося зберегти історію.');
 
@@ -356,7 +477,7 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
                 }
             }
         },
-        [images, mutateAsync, queryClient, resetForm, showFormError, turnstileToken, year]
+        [images, mutateAsync, onClose, queryClient, resetForm, showFormError, turnstileToken, year]
     );
 
     const onInvalidSubmit: SubmitErrorHandler<StoryFormValues> = React.useCallback(
@@ -402,263 +523,244 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, onClose }) =>
         [confirmingStoryId, deleteUserStoryAsync, queryClient, year]
     );
 
-    const closeModal = React.useCallback(() => {
-        onFormOpenChange(false);
-        onClose();
-    }, [onClose, onFormOpenChange]);
+    const storyUsers = React.useMemo<User[]>(() => {
+        return (storiesQuery.data ?? []).map((story) => {
+            const fallbackImage = '/images/video_bg.png';
+            const avatarUrl = story.images[0]?.publicUrl ?? fallbackImage;
 
-    const onModalOpenChange = React.useCallback<NonNullable<React.ComponentProps<typeof Dialog.Root>['onOpenChange']>>(
-        (nextOpen, eventDetails) => {
-            if (!nextOpen && eventDetails.reason === 'escape-key' && isPhotoViewerOpenRef.current) {
-                eventDetails.allowPropagation();
-                eventDetails.cancel();
-                return;
-            }
+            return {
+                id: story.id,
+                username: story.authorName,
+                avatarUrl,
+                hasUnreadStories: true,
+                stories:
+                    story.images.length > 0
+                        ? story.images.map((image, imageIndex) => {
+                              return {
+                                  id: image.id,
+                                  type: 'custom_component',
+                                  duration: 7000,
+                                  component: createStoryContentComponent({
+                                      story,
+                                      imageUrl: image.publicUrl,
+                                      imageIndex,
+                                      imageCount: story.images.length,
+                                      isAdminMode,
+                                      deletingStoryId,
+                                      confirmingStoryId,
+                                      deleteError,
+                                      onDeleteStory,
+                                      onCancelDelete() {
+                                          setConfirmingStoryId(null);
+                                      },
+                                  }),
+                              };
+                          })
+                        : [
+                              {
+                                  id: `${story.id}-text`,
+                                  type: 'custom_component',
+                                  duration: 7000,
+                                  component: createStoryContentComponent({
+                                      story,
+                                      imageUrl: fallbackImage,
+                                      imageIndex: 0,
+                                      imageCount: 0,
+                                      isAdminMode,
+                                      deletingStoryId,
+                                      confirmingStoryId,
+                                      deleteError,
+                                      onDeleteStory,
+                                      onCancelDelete() {
+                                          setConfirmingStoryId(null);
+                                      },
+                                  }),
+                              },
+                          ],
+            };
+        });
+    }, [confirmingStoryId, deleteError, deletingStoryId, isAdminMode, onDeleteStory, storiesQuery.data]);
 
-            if (!nextOpen) {
-                closeModal();
-            }
-        },
-        [closeModal]
-    );
-
-    const onPhotoViewerVisibleChange = React.useCallback((visible: boolean) => {
-        isPhotoViewerOpenRef.current = visible;
-    }, []);
+    const isViewerOpen = isOpen && Boolean(year) && !shouldOpenForm && storyUsers.length > 0;
+    const safeInitialUserIndex = Math.min(initialUserIndex, Math.max(storyUsers.length - 1, 0));
+    const isEmptyStateOpen =
+        isOpen && Boolean(year) && !shouldOpenForm && !storiesQuery.isLoading && storyUsers.length === 0;
 
     return (
-        <Dialog.Root open={isOpen && Boolean(year)} onOpenChange={onModalOpenChange}>
-            <Dialog.Portal>
-                <Dialog.Backdrop className={s.modalOverlay} />
-                <Dialog.Viewport className={s.modalViewport}>
-                    <Dialog.Popup className={s.storiesModal}>
-                        <header className={s.modalHeader}>
-                            <div>
-                                <span className={s.sectionKicker}>{year}</span>
-                                <Dialog.Title id="stories-modal-title" className={s.modalTitle}>
-                                    Історії команди HomeNet
-                                </Dialog.Title>
+        <>
+            <StoryViewer
+                users={storyUsers}
+                isOpen={isViewerOpen}
+                initialUserIndex={safeInitialUserIndex}
+                initialStoryIndex={0}
+                onClose={onClose}
+                classNames={{
+                    root: s.instagramViewerRoot,
+                    overlay: s.instagramViewerOverlay,
+                    content: s.instagramViewerContent,
+                    header: s.instagramViewerHeader,
+                    closeButton: s.instagramViewerClose,
+                    items: s.instagramViewerItems,
+                    storyItem: {
+                        root: s.instagramViewerStoryItem,
+                    },
+                    progressBars: {
+                        root: s.instagramProgressRoot,
+                        bar: {
+                            fill: s.instagramProgressFill,
+                        },
+                    },
+                }}
+            />
+
+            <Dialog.Root
+                open={isEmptyStateOpen}
+                onOpenChange={(nextOpen) => {
+                    if (!nextOpen) {
+                        onClose();
+                    }
+                }}
+            >
+                <Dialog.Portal>
+                    <Dialog.Backdrop className={s.modalOverlay} />
+                    <Dialog.Viewport className={s.modalViewport}>
+                        <Dialog.Popup className={s.emptyStoriesModal}>
+                            <header className={s.modalHeader}>
+                                <div>
+                                    <span className={s.sectionKicker}>{year}</span>
+                                    <Dialog.Title className={s.modalTitle}>Історії команди HomeNet</Dialog.Title>
+                                </div>
+                                <Dialog.Close className={s.modalClose}>Закрити</Dialog.Close>
+                            </header>
+
+                            <div className={s.emptyStoriesBody}>
+                                {storiesQuery.isError ? (
+                                    <p className={s.formError}>Не вдалося завантажити історії. Спробуйте пізніше.</p>
+                                ) : (
+                                    <p className={s.emptyStories}>
+                                        Ще немає історій за цей рік. Додайте перший спогад команди.
+                                    </p>
+                                )}
+
+                                <Button
+                                    className={s.primaryCta}
+                                    type="button"
+                                    onClick={() => {
+                                        setIsFormOpen(true);
+                                    }}
+                                >
+                                    Додати історію
+                                </Button>
                             </div>
-                            <Dialog.Close className={s.modalClose}>Закрити</Dialog.Close>
-                        </header>
+                        </Dialog.Popup>
+                    </Dialog.Viewport>
+                </Dialog.Portal>
+            </Dialog.Root>
 
-                        <Dialog.Root open={isFormOpen} modal="trap-focus" onOpenChange={onFormOpenChange}>
-                            <Dialog.Trigger className={s.formDialogTrigger}>Додати історію</Dialog.Trigger>
-
-                            <div className={s.modalGrid}>
-                                <section className={s.storiesList} aria-label={`Історії за ${year} рік`}>
-                                    <div className={s.storiesListInner}>
-                                        {storiesQuery.isLoading ? (
-                                            <p className={s.emptyStories}>Завантажуємо історії...</p>
-                                        ) : null}
-                                        {storiesQuery.isError ? (
-                                            <p className={s.formError}>
-                                                Не вдалося завантажити історії. Спробуйте пізніше.
-                                            </p>
-                                        ) : null}
-                                        {deleteError ? (
-                                            <p className={s.formError} aria-live="polite">
-                                                {deleteError}
-                                            </p>
-                                        ) : null}
-                                        {storiesQuery.data?.length === 0 ? (
-                                            <p className={s.emptyStories}>
-                                                Ще немає історій за цей рік. Додайте перший спогад команди.
-                                            </p>
-                                        ) : null}
-
-                                        <PhotoProvider onVisibleChange={onPhotoViewerVisibleChange}>
-                                            {storiesQuery.data?.map((story) => {
-                                                let deleteButtonLabel = 'Видалити';
-
-                                                if (deletingStoryId === story.id) {
-                                                    deleteButtonLabel = 'Видаляємо...';
-                                                } else if (confirmingStoryId === story.id) {
-                                                    deleteButtonLabel = 'Підтвердити';
-                                                }
-
-                                                return (
-                                                    <article key={story.id} className={s.storyCard}>
-                                                        <div className={s.storyMetaRow}>
-                                                            <div className={s.storyAuthor}>
-                                                                <strong>{story.authorName}</strong>
-                                                                {story.authorRole ? (
-                                                                    <span>{story.authorRole}</span>
-                                                                ) : null}
-                                                            </div>
-
-                                                            {isAdminMode ? (
-                                                                <div className={s.storyActions}>
-                                                                    <Button
-                                                                        className={s.deleteStoryButton}
-                                                                        variant="ghost"
-                                                                        size="small"
-                                                                        disabled={deletingStoryId === story.id}
-                                                                        onClick={() => {
-                                                                            void onDeleteStory(story.id);
-                                                                        }}
-                                                                    >
-                                                                        {deleteButtonLabel}
-                                                                    </Button>
-
-                                                                    {confirmingStoryId === story.id ? (
-                                                                        <button
-                                                                            className={s.cancelDeleteButton}
-                                                                            type="button"
-                                                                            onClick={() => {
-                                                                                setConfirmingStoryId(null);
-                                                                            }}
-                                                                        >
-                                                                            Скасувати
-                                                                        </button>
-                                                                    ) : null}
-                                                                </div>
-                                                            ) : null}
-                                                        </div>
-                                                        <p>{story.storyText}</p>
-
-                                                        {story.images.length > 0 ? (
-                                                            <ul className={s.storyGallery} aria-label="Фото до історії">
-                                                                {story.images.map((image, imageIndex) => {
-                                                                    return (
-                                                                        <li
-                                                                            key={image.id}
-                                                                            className={s.storyGalleryItem}
-                                                                        >
-                                                                            <PhotoView src={image.publicUrl}>
-                                                                                <button
-                                                                                    className={s.storyImageThumb}
-                                                                                    type="button"
-                                                                                    aria-label={`Відкрити фото ${imageIndex + 1} до історії ${story.authorName}`}
-                                                                                >
-                                                                                    <img src={image.publicUrl} alt="" />
-                                                                                </button>
-                                                                            </PhotoView>
-                                                                        </li>
-                                                                    );
-                                                                })}
-                                                            </ul>
-                                                        ) : null}
-                                                    </article>
-                                                );
-                                            })}
-                                        </PhotoProvider>
+            <Dialog.Root open={Boolean(year) && isFormOpen} modal="trap-focus" onOpenChange={onFormOpenChange}>
+                <Dialog.Portal>
+                    <Dialog.Backdrop className={s.formDialogScrim} forceRender />
+                    <Dialog.Viewport className={s.formDialogViewport}>
+                        <Dialog.Popup className={s.formDialog}>
+                            <form className={s.storyForm} noValidate onSubmit={submitForm}>
+                                <div className={s.formHeader}>
+                                    <div>
+                                        <span className={s.sectionKicker}>{year}</span>
+                                        <Dialog.Title className={s.formTitle}>Додати свою подію</Dialog.Title>
+                                        <Dialog.Description className={s.formDescription}>
+                                            Розкажіть коротку історію та додайте до 3 фото.
+                                        </Dialog.Description>
                                     </div>
-                                </section>
-                            </div>
+                                    <Dialog.Close className={s.formClose}>Закрити</Dialog.Close>
+                                </div>
 
-                            <Dialog.Portal>
-                                <Dialog.Backdrop className={s.formDialogScrim} forceRender />
-                                <Dialog.Viewport className={s.formDialogViewport}>
-                                    <Dialog.Popup className={s.formDialog}>
-                                        <form className={s.storyForm} noValidate onSubmit={submitForm}>
-                                            <div className={s.formHeader}>
-                                                <div>
-                                                    <span className={s.sectionKicker}>{year}</span>
-                                                    <Dialog.Title className={s.formTitle}>
-                                                        Додати свою подію
-                                                    </Dialog.Title>
-                                                    <Dialog.Description className={s.formDescription}>
-                                                        Розкажіть коротку історію та додайте до 3 фото.
-                                                    </Dialog.Description>
-                                                </div>
-                                                <Dialog.Close className={s.formClose}>Закрити</Dialog.Close>
-                                            </div>
+                                <div className={s.formBody}>
+                                    {visibleFormError ? (
+                                        <p ref={formErrorRef} className={s.formError} aria-live="polite">
+                                            {visibleFormError}
+                                        </p>
+                                    ) : null}
 
-                                            <div className={s.formBody}>
-                                                {visibleFormError ? (
-                                                    <p ref={formErrorRef} className={s.formError} aria-live="polite">
-                                                        {visibleFormError}
-                                                    </p>
-                                                ) : null}
+                                    <label className={s.formField}>
+                                        <span>Імʼя та прізвище</span>
+                                        <input
+                                            {...register('authorName', {
+                                                required: 'Вкажіть імʼя та прізвище.',
+                                                minLength: {
+                                                    value: 2,
+                                                    message: 'Імʼя має містити щонайменше 2 символи.',
+                                                },
+                                                maxLength: {
+                                                    value: 80,
+                                                    message: 'Імʼя має містити до 80 символів.',
+                                                },
+                                            })}
+                                        />
+                                    </label>
 
-                                                <label className={s.formField}>
-                                                    <span>Імʼя та прізвище</span>
-                                                    <input
-                                                        {...register('authorName', {
-                                                            required: 'Вкажіть імʼя та прізвище.',
-                                                            minLength: {
-                                                                value: 2,
-                                                                message: 'Імʼя має містити щонайменше 2 символи.',
-                                                            },
-                                                            maxLength: {
-                                                                value: 80,
-                                                                message: 'Імʼя має містити до 80 символів.',
-                                                            },
-                                                        })}
-                                                    />
-                                                </label>
+                                    <label className={s.formField}>
+                                        <span>Посада або роль</span>
+                                        <input
+                                            {...register('authorRole', {
+                                                maxLength: {
+                                                    value: 120,
+                                                    message: 'Посада має містити до 120 символів.',
+                                                },
+                                            })}
+                                        />
+                                    </label>
 
-                                                <label className={s.formField}>
-                                                    <span>Посада або роль</span>
-                                                    <input
-                                                        {...register('authorRole', {
-                                                            maxLength: {
-                                                                value: 120,
-                                                                message: 'Посада має містити до 120 символів.',
-                                                            },
-                                                        })}
-                                                    />
-                                                </label>
+                                    <label className={s.formField}>
+                                        <span>Історія</span>
+                                        <textarea
+                                            {...register('storyText', {
+                                                required: 'Додайте текст історії.',
+                                                minLength: {
+                                                    value: 5,
+                                                    message: 'Історія має містити щонайменше 5 символів.',
+                                                },
+                                                maxLength: {
+                                                    value: 1500,
+                                                    message: 'Історія має містити до 1500 символів.',
+                                                },
+                                            })}
+                                        />
+                                    </label>
 
-                                                <label className={s.formField}>
-                                                    <span>Історія</span>
-                                                    <textarea
-                                                        {...register('storyText', {
-                                                            required: 'Додайте текст історії.',
-                                                            minLength: {
-                                                                value: 5,
-                                                                message: 'Історія має містити щонайменше 5 символів.',
-                                                            },
-                                                            maxLength: {
-                                                                value: 1500,
-                                                                message: 'Історія має містити до 1500 символів.',
-                                                            },
-                                                        })}
-                                                    />
-                                                </label>
+                                    <label className={s.fileField}>
+                                        <span>Фото</span>
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/jpeg,image/png,image/webp"
+                                            multiple
+                                            onChange={onFilesChange}
+                                        />
+                                        <small>До 3 фото, JPG/PNG/WebP, максимум 3 MB кожне.</small>
+                                    </label>
 
-                                                <label className={s.fileField}>
-                                                    <span>Фото</span>
-                                                    <input
-                                                        ref={fileInputRef}
-                                                        type="file"
-                                                        accept="image/jpeg,image/png,image/webp"
-                                                        multiple
-                                                        onChange={onFilesChange}
-                                                    />
-                                                    <small>До 3 фото, JPG/PNG/WebP, максимум 3 MB кожне.</small>
-                                                </label>
+                                    {images.length > 0 ? (
+                                        <ul className={s.fileList}>
+                                            {images.map((image) => {
+                                                return <li key={`${image.name}-${image.size}`}>{image.name}</li>;
+                                            })}
+                                        </ul>
+                                    ) : null}
 
-                                                {images.length > 0 ? (
-                                                    <ul className={s.fileList}>
-                                                        {images.map((image) => {
-                                                            return (
-                                                                <li key={`${image.name}-${image.size}`}>
-                                                                    {image.name}
-                                                                </li>
-                                                            );
-                                                        })}
-                                                    </ul>
-                                                ) : null}
+                                    <div ref={turnstileRef} className={s.turnstileBox} />
+                                </div>
 
-                                                <div ref={turnstileRef} className={s.turnstileBox} />
-                                            </div>
-
-                                            <div className={s.formFooter}>
-                                                <Button className={s.primaryCta} type="submit" disabled={isPending}>
-                                                    {isPending ? 'Зберігаємо...' : 'Опублікувати історію'}
-                                                </Button>
-                                            </div>
-                                        </form>
-                                    </Dialog.Popup>
-                                </Dialog.Viewport>
-                            </Dialog.Portal>
-                        </Dialog.Root>
-                    </Dialog.Popup>
-                </Dialog.Viewport>
-            </Dialog.Portal>
-        </Dialog.Root>
+                                <div className={s.formFooter}>
+                                    <Button className={s.primaryCta} type="submit" disabled={isPending}>
+                                        {isPending ? 'Зберігаємо...' : 'Опублікувати історію'}
+                                    </Button>
+                                </div>
+                            </form>
+                        </Dialog.Popup>
+                    </Dialog.Viewport>
+                </Dialog.Portal>
+            </Dialog.Root>
+        </>
     );
 };
 

@@ -524,10 +524,12 @@
     transform-origin: top;
 }
 
+/* style.module.css */
 .milestone {
     position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) 4rem minmax(0, 1fr);
+    grid-auto-flow: dense; /* ← додати */
     align-items: center;
     min-height: 29rem;
     scroll-margin-top: 8rem;
@@ -590,6 +592,7 @@
 
 .milestoneImage {
     position: relative;
+    aspect-ratio: 4 / 3;
     min-height: 18rem;
     overflow: hidden;
     border-radius: 1rem;
@@ -731,12 +734,328 @@
     line-height: 1.15;
 }
 
-.storyButton {
-    width: fit-content;
-    margin-top: 1.25rem;
-    border: 1px solid var(--timeline-border) !important;
-    background: var(--timeline-glass-strong) !important;
-    color: var(--timeline-accent-strong) !important;
+.timelineStories {
+    grid-column: 3 / span 1;
+    justify-self: stretch;
+    width: 100%;
+    min-height: 29rem;
+}
+
+.milestoneMirrored .timelineStories {
+    grid-column: 1 / span 1;
+    justify-self: stretch;
+}
+
+.timelineStoriesActive {
+    z-index: 1;
+}
+
+.timelineStoryBubbleField {
+    position: relative;
+    width: 100%;
+    min-height: 29rem;
+    overflow: hidden;
+}
+
+.timelineStoryAvatarList {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: visible;
+    scrollbar-width: none;
+}
+
+.timelineStoryAvatarList::-webkit-scrollbar {
+    display: none;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-list-inner) {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    min-height: 100% !important;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item) {
+    position: absolute !important;
+    top: var(--bubble-y, 50%) !important;
+    left: var(--bubble-x, 50%) !important;
+    width: var(--bubble-size, 4rem) !important;
+    height: var(--bubble-size, 4rem) !important;
+    transform: translate(-50%, -50%);
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(1)) {
+    --bubble-x: 50%;
+    --bubble-y: 48%;
+    --bubble-size: 6.8rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(2)) {
+    --bubble-x: 28%;
+    --bubble-y: 40%;
+    --bubble-size: 4.9rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(3)) {
+    --bubble-x: 72%;
+    --bubble-y: 38%;
+    --bubble-size: 5.25rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(4)) {
+    --bubble-x: 38%;
+    --bubble-y: 66%;
+    --bubble-size: 5.4rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(5)) {
+    --bubble-x: 64%;
+    --bubble-y: 68%;
+    --bubble-size: 4.8rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(6)) {
+    --bubble-x: 17%;
+    --bubble-y: 62%;
+    --bubble-size: 4.3rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(7)) {
+    --bubble-x: 83%;
+    --bubble-y: 60%;
+    --bubble-size: 4.1rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(8)) {
+    --bubble-x: 22%;
+    --bubble-y: 22%;
+    --bubble-size: 3.95rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(9)) {
+    --bubble-x: 52%;
+    --bubble-y: 20%;
+    --bubble-size: 4.15rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(10)) {
+    --bubble-x: 80%;
+    --bubble-y: 22%;
+    --bubble-size: 3.9rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(11)) {
+    --bubble-x: 12%;
+    --bubble-y: 39%;
+    --bubble-size: 3.7rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(12)) {
+    --bubble-x: 88%;
+    --bubble-y: 41%;
+    --bubble-size: 3.75rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(13)) {
+    --bubble-x: 23%;
+    --bubble-y: 80%;
+    --bubble-size: 3.9rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(14)) {
+    --bubble-x: 50%;
+    --bubble-y: 84%;
+    --bubble-size: 4.3rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(15)) {
+    --bubble-x: 76%;
+    --bubble-y: 81%;
+    --bubble-size: 3.8rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(16)) {
+    --bubble-x: 37%;
+    --bubble-y: 25%;
+    --bubble-size: 3.55rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(17)) {
+    --bubble-x: 65%;
+    --bubble-y: 24%;
+    --bubble-size: 3.55rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(18)) {
+    --bubble-x: 35%;
+    --bubble-y: 82%;
+    --bubble-size: 3.35rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(19)) {
+    --bubble-x: 64%;
+    --bubble-y: 84%;
+    --bubble-size: 3.35rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(20)) {
+    --bubble-x: 11%;
+    --bubble-y: 76%;
+    --bubble-size: 3.3rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(21)) {
+    --bubble-x: 90%;
+    --bubble-y: 75%;
+    --bubble-size: 3.3rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(22)) {
+    --bubble-x: 12%;
+    --bubble-y: 24%;
+    --bubble-size: 3.25rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(23)) {
+    --bubble-x: 91%;
+    --bubble-y: 27%;
+    --bubble-size: 3.25rem;
+}
+
+.timelineStoryAvatarList :global(.story-avatar-item:nth-child(24)) {
+    --bubble-x: 49%;
+    --bubble-y: 8%;
+    --bubble-size: 3.1rem;
+}
+
+.timelineStoryAvatar {
+    width: 100%;
+    height: 100%;
+    gap: 0;
+    padding: 0;
+    transition:
+        filter 0.18s ease,
+        transform 0.18s ease;
+}
+
+.timelineStoryAvatar:hover {
+    filter: saturate(1.1);
+}
+
+.timelineStoryAvatarRing {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 3px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #ff981a 0%, #ff810a 35%, #ff660a 70%, #bf3f00 100%);
+    box-shadow:
+        0 12px 32px color-mix(in srgb, var(--color-dark-900) 14%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--color-white-100) 60%, transparent);
+}
+
+.timelineStoryAvatar:global(.story-avatar-read) .timelineStoryAvatarRing {
+    background: color-mix(in srgb, var(--color-text-secondary) 42%, var(--color-white-100));
+    box-shadow: 0 8px 22px color-mix(in srgb, var(--color-dark-900) 9%, transparent);
+}
+
+.timelineStoryAvatarImageWrapper {
+    width: 100%;
+    height: 100%;
+    border: 3px solid var(--color-white-100);
+    background: var(--timeline-accent-soft);
+}
+
+.timelineStoryAvatarImage,
+.timelineStoryAvatarPlaceholder {
+    width: 100%;
+    height: 100%;
+}
+
+.timelineStoryAvatarImage {
+    object-fit: cover;
+}
+
+.timelineStoryAvatarPlaceholder {
+    display: grid;
+    place-items: center;
+    color: var(--timeline-accent-strong);
+    font-size: clamp(0.75rem, calc(var(--bubble-size, 4rem) * 0.24), 1.35rem);
+    font-weight: 800;
+}
+
+.timelineStoryAvatarUsername {
+    display: none;
+}
+
+.emptyStoryBubble {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    width: var(--bubble-size, 4rem);
+    height: var(--bubble-size, 4rem);
+    padding: 0;
+    border: 2px dashed color-mix(in srgb, var(--timeline-accent) 32%, transparent);
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--timeline-accent) 8%, transparent);
+    color: var(--timeline-accent-strong);
+    cursor: pointer;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 800;
+    transform: translate(-50%, -50%);
+    transition:
+        filter 0.18s ease,
+        transform 0.18s ease;
+}
+
+.emptyStoryBubbleHidden {
+    display: none;
+}
+
+.addStoryBubble {
+    position: absolute;
+    right: 8%;
+    bottom: 8%;
+    display: grid;
+    place-items: center;
+    width: 3.6rem;
+    height: 3.6rem;
+    border: 1px solid color-mix(in srgb, var(--timeline-accent) 24%, transparent);
+    border-radius: 50%;
+    background: var(--timeline-ink);
+    box-shadow: 0 14px 36px color-mix(in srgb, var(--color-dark-900) 18%, transparent);
+    color: var(--color-white-100);
+    cursor: pointer;
+    font: inherit;
+    font-size: 1.5rem;
+    font-weight: 400;
+    line-height: 1;
+    transition:
+        background-color 0.18s ease,
+        box-shadow 0.18s ease,
+        transform 0.18s ease;
+}
+
+.addStoryBubble:hover {
+    background: var(--timeline-accent-strong);
+    box-shadow: 0 12px 26px color-mix(in srgb, var(--timeline-accent) 20%, transparent);
+    transform: translateY(-1px);
+}
+
+.addStoryBubble:focus-visible,
+.emptyStoryBubble:focus-visible,
+.timelineStoryAvatar:focus-visible {
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--timeline-accent) 16%, transparent);
+    outline: none;
 }
 
 .modalOverlay {
@@ -789,12 +1108,11 @@
     --color-surface-raised-active: color-mix(in srgb, var(--timeline-accent) 18%, var(--color-white-100));
 }
 
-.storiesModal {
+.emptyStoriesModal {
     position: relative;
     display: flex;
     flex-direction: column;
-    width: min(1120px, 100%);
-    max-height: min(88vh, 56rem);
+    width: min(34rem, 100%);
     overflow: hidden;
     border: 1px solid var(--timeline-glass-strong);
     border-radius: 1.5rem;
@@ -809,8 +1127,8 @@
     will-change: transform;
 }
 
-.storiesModal[data-starting-style],
-.storiesModal[data-ending-style] {
+.emptyStoriesModal[data-starting-style],
+.emptyStoriesModal[data-ending-style] {
     opacity: 0;
     transform: translateY(1.5rem) scale(0.98);
 }
@@ -864,90 +1182,124 @@
     outline: none;
 }
 
-.modalGrid {
-    position: relative;
-    flex: 1 1 auto;
-    min-height: 0;
-    padding: 0;
-    overflow: hidden;
+.emptyStoriesBody {
+    display: grid;
+    gap: 1rem;
+    padding: 1.25rem;
 }
 
-.modalGrid::before,
-.modalGrid::after {
-    content: "";
+.instagramViewerRoot {
+    z-index: 50;
+}
+
+.instagramViewerOverlay {
+    background: color-mix(in srgb, var(--color-dark-1000) 90%, transparent);
+    backdrop-filter: blur(14px);
+}
+
+.instagramViewerContent {
+    max-width: min(28rem, 100vw);
+    background: var(--color-dark-1000);
+}
+
+.instagramViewerHeader {
+    padding: 1rem 1rem 5.75rem;
+}
+
+.instagramViewerClose {
+    background: color-mix(in srgb, var(--color-dark-1000) 54%, transparent);
+}
+
+.instagramViewerItems,
+.instagramViewerStoryItem {
+    background: var(--color-dark-1000);
+}
+
+.instagramProgressRoot {
+    gap: 0.25rem;
+}
+
+.instagramProgressFill {
+    background: var(--color-white-100);
+}
+
+.instagramStoryContent {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--color-dark-1000);
+}
+
+.instagramStoryImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+}
+
+.instagramStoryScrim {
     position: absolute;
-    right: 0;
-    left: 0;
-    z-index: 2;
-    height: 1.5rem;
+    inset: auto 0 0;
+    height: 48%;
+    background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--color-dark-1000) 86%, transparent));
     pointer-events: none;
 }
 
-.modalGrid::before {
-    top: 0;
-    background: linear-gradient(180deg, var(--color-white-100), transparent);
-}
-
-.modalGrid::after {
+.instagramStoryCaption {
+    position: absolute;
+    right: 0;
     bottom: 0;
-    background: linear-gradient(0deg, var(--color-white-100), transparent);
-}
-
-.storiesList {
-    height: 100%;
-    max-height: calc(min(88vh, 56rem) - 6.75rem);
-    overflow-y: auto;
-    scrollbar-gutter: stable;
-}
-
-.storiesListInner {
+    left: 0;
     display: grid;
     gap: 0.75rem;
-    padding: 1rem 1.25rem 5.25rem;
+    padding: 1rem;
+    color: var(--color-white-100);
 }
 
-.formDialogTrigger {
-    position: absolute;
-    right: 1.5rem;
-    bottom: 1.5rem;
-    z-index: 4;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: var(--button-height-medium);
-    padding: 0 1rem;
-    border: 1px solid color-mix(in srgb, var(--timeline-accent) 22%, transparent);
-    border-radius: 999px;
-    background: var(--color-white-100);
-    box-shadow: 0 12px 28px color-mix(in srgb, var(--color-dark-900) 12%, transparent);
-    color: var(--timeline-accent-strong);
-    cursor: pointer;
-    font: inherit;
-    font-size: var(--button-font-size-medium);
-    font-weight: 700;
-    line-height: 1;
-    transition:
-        background-color 0.18s ease,
-        border-color 0.18s ease,
-        box-shadow 0.18s ease,
-        color 0.18s ease,
-        transform 0.18s ease;
+.instagramStoryMeta {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.75rem;
 }
 
-.formDialogTrigger:hover {
-    border-color: color-mix(in srgb, var(--timeline-accent) 40%, transparent);
-    background: color-mix(in srgb, var(--timeline-accent) 8%, var(--color-white-100));
-    box-shadow: 0 14px 32px color-mix(in srgb, var(--timeline-accent) 16%, transparent);
-    color: var(--timeline-ink);
-    transform: translateY(-1px);
+.instagramStoryMeta div {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
 }
 
-.formDialogTrigger:focus-visible {
-    border-color: var(--timeline-accent);
-    box-shadow:
-        0 0 0 0.2rem color-mix(in srgb, var(--timeline-accent) 14%, transparent),
-        0 14px 32px color-mix(in srgb, var(--timeline-accent) 16%, transparent);
-    outline: none;
+.instagramStoryMeta strong {
+    font-size: 1rem;
+    line-height: 1.2;
+}
+
+.instagramStoryMeta span {
+    color: color-mix(in srgb, var(--color-white-100) 72%, transparent);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.instagramStoryCaption p {
+    display: -webkit-box;
+    max-height: 8.75rem;
+    margin: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    color: color-mix(in srgb, var(--color-white-100) 88%, transparent);
+    font-size: 0.875rem;
+    line-height: 1.55;
+}
+
+.instagramStoryError {
+    padding: 0.65rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--color-danger) 34%, transparent);
+    border-radius: 0.625rem;
+    background: color-mix(in srgb, var(--color-danger) 18%, var(--color-dark-1000));
+    color: var(--color-white-100) !important;
 }
 
 .formDialogScrim {
@@ -1022,62 +1374,6 @@
     line-height: 1.6;
 }
 
-.storyCard {
-    position: relative;
-    display: grid;
-    gap: 0.75rem;
-    padding: 1rem 1rem 1rem 1.125rem;
-    border: 1px solid color-mix(in srgb, var(--timeline-border) 72%, transparent);
-    border-radius: 0.875rem;
-    background: var(--color-white-100);
-    box-shadow: 0 10px 28px color-mix(in srgb, var(--color-dark-900) 7%, transparent);
-}
-
-.storyCard::before {
-    content: "";
-    position: absolute;
-    top: 1rem;
-    bottom: 1rem;
-    left: 0;
-    width: 0.1875rem;
-    border-radius: 999px;
-    background: linear-gradient(180deg, var(--timeline-accent), var(--timeline-teal));
-    opacity: 0.82;
-}
-
-.storyMetaRow {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.75rem;
-}
-
-.storyAuthor {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.25rem 0.5rem;
-    min-width: 0;
-}
-
-.storyAuthor strong {
-    color: var(--timeline-ink);
-    font-size: 0.9375rem;
-    line-height: 1.2;
-}
-
-.storyAuthor span,
-.storyCard p {
-    color: var(--timeline-muted-strong);
-    font-size: 0.875rem;
-    line-height: 1.65;
-}
-
-.storyCard p {
-    margin: 0;
-    max-width: 76ch;
-}
-
 .storyActions {
     display: flex;
     flex: 0 0 auto;
@@ -1114,62 +1410,6 @@
 
 .cancelDeleteButton:hover {
     color: var(--timeline-ink);
-}
-
-.storyGallery {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.375rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.storyGalleryItem {
-    flex: 0 0 auto;
-}
-
-.storyImageThumb {
-    display: grid;
-    place-items: center;
-    width: 3.25rem;
-    height: 3.25rem;
-    padding: 0;
-    border: 1px solid color-mix(in srgb, var(--timeline-accent) 18%, transparent);
-    border-radius: 0.5rem;
-    background: var(--timeline-accent-soft);
-    cursor: zoom-in;
-    overflow: hidden;
-    transition:
-        border-color 0.18s ease,
-        box-shadow 0.18s ease,
-        transform 0.18s ease;
-}
-
-.storyImageThumb img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.28s ease;
-}
-
-.storyImageThumb:hover {
-    border-color: color-mix(in srgb, var(--timeline-accent) 46%, transparent);
-    box-shadow: 0 8px 18px color-mix(in srgb, var(--timeline-accent) 16%, transparent);
-    transform: translateY(-1px);
-}
-
-.storyImageThumb:hover img {
-    transform: scale(1.08);
-}
-
-.storyImageThumb:focus-visible {
-    border-color: var(--timeline-accent);
-    box-shadow:
-        0 0 0 0.2rem color-mix(in srgb, var(--timeline-accent) 14%, transparent),
-        0 10px 22px color-mix(in srgb, var(--timeline-accent) 18%, transparent);
-    outline: none;
 }
 
 .storyForm {
@@ -1461,6 +1701,10 @@
         border-radius: 1.5rem;
     }
 
+    .yearNavScroller {
+        overflow: auto;
+    }
+
     .anniversaryMark span {
         font-size: 6rem;
     }
@@ -1541,8 +1785,14 @@
     }
 
     .timelineNode {
+        grid-column: 1;
         width: 1.25rem;
         height: 1.25rem;
+    }
+
+    .milestoneCard,
+    .milestoneMirrored .milestoneCard {
+        grid-column: 2;
     }
 
     .milestoneCard {
@@ -1586,8 +1836,34 @@
         white-space: normal;
     }
 
-    .storyButton {
+    .timelineStories,
+    .milestoneMirrored .timelineStories {
+        grid-column: 2;
+        justify-self: stretch;
         width: 100%;
+        min-height: 16rem;
+        margin-top: -0.75rem;
+    }
+
+    .timelineStoryBubbleField {
+        min-height: 16rem;
+    }
+
+    .timelineStoryAvatarList :global(.story-avatar-item) {
+        width: calc(var(--bubble-size, 4rem) * 0.78);
+        height: calc(var(--bubble-size, 4rem) * 0.78);
+    }
+
+    .addStoryBubble {
+        right: 5%;
+        bottom: 6%;
+        width: 2.9rem;
+        height: 2.9rem;
+    }
+
+    .emptyStoryBubble {
+        width: 4.25rem;
+        height: 4.25rem;
     }
 
     .modalViewport {
@@ -1595,13 +1871,13 @@
         padding: 0.5rem;
     }
 
-    .storiesModal {
-        max-height: 94vh;
+    .emptyStoriesModal {
+        width: 100%;
         border-radius: 1.25rem;
     }
 
-    .storiesModal[data-starting-style],
-    .storiesModal[data-ending-style] {
+    .emptyStoriesModal[data-starting-style],
+    .emptyStoriesModal[data-ending-style] {
         transform: translateY(calc(100% + 1rem));
     }
 
@@ -1609,36 +1885,21 @@
         padding: 1rem;
     }
 
-    .modalGrid {
-        overflow: hidden;
+    .instagramViewerContent {
+        max-width: 100%;
     }
 
-    .storiesList {
-        max-height: calc(94vh - 6.25rem);
-        min-height: auto;
+    .instagramStoryCaption {
+        padding: 0.875rem;
     }
 
-    .storiesListInner {
-        padding: 0.75rem 0.875rem 5rem;
+    .instagramStoryCaption p {
+        max-height: 7.25rem;
     }
 
-    .storyCard {
-        padding: 0.875rem 0.875rem 0.875rem 1rem;
-    }
-
-    .storyMetaRow {
+    .instagramStoryMeta {
+        align-items: flex-start;
         flex-direction: column;
-    }
-
-    .formDialogTrigger {
-        right: 1rem;
-        bottom: 1rem;
-        min-height: 2.375rem;
-        padding: 0 0.875rem;
-    }
-
-    .formDialogTrigger:hover {
-        transform: none;
     }
 
     .formDialogViewport {

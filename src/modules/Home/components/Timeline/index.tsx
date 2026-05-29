@@ -10,10 +10,17 @@ type TimelineProps = {
     milestones: Milestone[];
     activeYear: string;
     onActiveYearChange: (_year: string) => void;
-    onYearStoriesOpen: (_year: string) => void;
+    onYearStoriesOpen: (_year: string, _userIndex?: number) => void;
+    onYearStoryAdd: (_year: string) => void;
 };
 
-const Timeline: React.FC<TimelineProps> = ({ milestones, activeYear, onActiveYearChange, onYearStoriesOpen }) => {
+const Timeline: React.FC<TimelineProps> = ({
+    milestones,
+    activeYear,
+    onActiveYearChange,
+    onYearStoriesOpen,
+    onYearStoryAdd,
+}) => {
     const sectionRef = React.useRef<HTMLElement | null>(null);
     const milestoneRefs = React.useRef(new Map<string, HTMLElement>());
     const { scrollYProgress } = useScroll({
@@ -94,7 +101,7 @@ const Timeline: React.FC<TimelineProps> = ({ milestones, activeYear, onActiveYea
             <div className={s.timelineIntro}>
                 <span className={s.sectionKicker}>Архів ключових подій</span>
                 <Typography id="timeline-title" variant="heading-2xl" className={s.sectionTitle}>
-                    Одинадцять розділів і одна мережа, що щороку стає сильнішою.
+                    10 років і одна мережа, що щороку стає сильнішою.
                 </Typography>
                 <Typography variant="body-md" className={s.sectionText}>
                     Скрольте таймлайн, щоб активний рік оновлювався автоматично, або використовуйте компактну навігацію
@@ -115,6 +122,7 @@ const Timeline: React.FC<TimelineProps> = ({ milestones, activeYear, onActiveYea
                                     isActive={activeYear === milestone.year}
                                     index={index}
                                     onYearStoriesOpen={onYearStoriesOpen}
+                                    onYearStoryAdd={onYearStoryAdd}
                                 />
                             );
                         })}

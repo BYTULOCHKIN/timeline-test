@@ -14,6 +14,8 @@ const Home: React.FC = () => {
     const [activeTag, setActiveTag] = React.useState<string>(ALL_TIMELINE_FILTER);
     const [activeYear, setActiveYear] = React.useState(MILESTONES[0]?.year ?? '');
     const [selectedStoriesYear, setSelectedStoriesYear] = React.useState<string | null>(null);
+    const [selectedStoriesUserIndex, setSelectedStoriesUserIndex] = React.useState(0);
+    const [shouldOpenStoryForm, setShouldOpenStoryForm] = React.useState(false);
 
     const filterOptions = React.useMemo(() => {
         return [ALL_TIMELINE_FILTER, ...TIMELINE_TAGS];
@@ -51,7 +53,19 @@ const Home: React.FC = () => {
     }, []);
 
     const openStoriesForYear = React.useCallback(
+        (year: string, userIndex = 0) => {
+            setShouldOpenStoryForm(false);
+            setSelectedStoriesUserIndex(userIndex);
+            setSelectedStoriesYear(year);
+            scrollToYear(year);
+        },
+        [scrollToYear]
+    );
+
+    const addStoryForYear = React.useCallback(
         (year: string) => {
+            setShouldOpenStoryForm(true);
+            setSelectedStoriesUserIndex(0);
             setSelectedStoriesYear(year);
             scrollToYear(year);
         },
@@ -109,12 +123,17 @@ const Home: React.FC = () => {
                 activeYear={activeYear}
                 onActiveYearChange={setActiveYear}
                 onYearStoriesOpen={openStoriesForYear}
+                onYearStoryAdd={addStoryForYear}
             />
             <FinalCTA onRestart={restartTimeline} />
             <StoriesModal
                 year={selectedStoriesYear}
                 isOpen={Boolean(selectedStoriesYear)}
+                shouldOpenForm={shouldOpenStoryForm}
+                initialUserIndex={selectedStoriesUserIndex}
                 onClose={() => {
+                    setShouldOpenStoryForm(false);
+                    setSelectedStoriesUserIndex(0);
                     setSelectedStoriesYear(null);
                 }}
             />

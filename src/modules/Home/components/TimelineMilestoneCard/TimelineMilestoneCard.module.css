@@ -1,0 +1,298 @@
+/* ─────────────────────────────────────────────────────────
+   TimelineMilestoneCard.module.css
+   ───────────────────────────────────────────────────────── */
+
+/* ── Card shell ──────────────────────────────────────────── */
+
+.milestoneCard {
+    grid-column: 1 / span 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 28rem;
+    padding: 0.75rem;
+    border-radius: 1.5rem;
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+/* Дзеркальна позиція — variant через prop */
+.milestoneCardMirrored {
+    grid-column: 3 / span 1;
+}
+
+/* Active state — variant через prop */
+.milestoneCardActive {
+    border-color: color-mix(in srgb, var(--timeline-accent) 36%, transparent);
+    box-shadow:
+        0 28px 90px color-mix(in srgb, var(--timeline-accent) 18%, transparent),
+        0 0 0 1px color-mix(in srgb, var(--timeline-accent) 10%, transparent);
+}
+
+/* ── Image ───────────────────────────────────────────────── */
+
+.milestoneImage {
+    position: relative;
+    flex-shrink: 0;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 1rem;
+    background-position: center;
+    background-size: 100%;
+
+    /*
+        Zoom через background-size — єдиний правильний спосіб
+        плавно збільшити CSS background-image на hover.
+        (transform: scale на ::after зсуває тільки overlay, не зображення)
+    */
+    transition: background-size 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.milestoneCard:hover .milestoneImage {
+    background-size: 108%;
+}
+
+/* Overlay — тінь знизу + glare зверху */
+.milestoneImage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(180deg, transparent 40%, color-mix(in srgb, var(--timeline-ink) 28%, transparent) 100%),
+        radial-gradient(circle at 30% 18%, color-mix(in srgb, var(--color-white-100) 36%, transparent), transparent 22%);
+    pointer-events: none;
+}
+
+/* Decorative dot-grid поверх зображення */
+.imageGrid {
+    position: absolute;
+    inset: 0;
+    opacity: 0.18;
+    background-image:
+        linear-gradient(color-mix(in srgb, var(--color-white-100) 55%, transparent) 1px, transparent 1px),
+        linear-gradient(90deg, color-mix(in srgb, var(--color-white-100) 55%, transparent) 1px, transparent 1px);
+    background-size: 22px 22px;
+    pointer-events: none;
+}
+
+/* Великий рік у правому нижньому куті зображення */
+.milestoneImageYear {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.75rem;
+    z-index: 1;
+    color: color-mix(in srgb, var(--color-white-100) 80%, transparent);
+    font-size: 3.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+}
+
+/* ── Body ────────────────────────────────────────────────── */
+
+.milestoneBody {
+    display: flex;
+    flex: 1 1 auto; /* займає залишок висоти картки */
+    flex-direction: column;
+    min-width: 0;
+    padding: 1rem 0.5rem 0.5rem;
+}
+
+/* Рядок: yearPill зліва, теги справа */
+.milestoneHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.875rem;
+}
+
+.yearPill {
+    display: inline-flex;
+    align-items: center;
+    height: 1.875rem;
+    padding: 0 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--timeline-accent) 18%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--timeline-accent) 8%, var(--color-white-100));
+    color: var(--timeline-accent-strong);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.tagList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.375rem;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.5rem;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--timeline-border);
+    border-radius: 999px;
+    background: var(--timeline-glass);
+    color: var(--timeline-muted-strong);
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+
+/* ── Text content ────────────────────────────────────────── */
+
+.milestoneTitle {
+    color: var(--timeline-ink);
+    font-size: 1.45rem;
+    line-height: 1.18;
+    text-transform: none !important;
+}
+
+.milestoneDescription {
+    margin-top: 0.625rem;
+    color: var(--timeline-muted-strong);
+    font-size: 0.9375rem;
+    line-height: 1.72;
+}
+
+/* ── Metrics ─────────────────────────────────────────────── */
+
+/*
+    margin-top: auto штовхає метрики до низу картки.
+    Працює завдяки flex: 1 на .milestoneBody.
+*/
+.metricGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+.metric {
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--timeline-border);
+    border-radius: 0.875rem;
+    background: color-mix(in srgb, var(--color-white-500) 72%, transparent);
+}
+
+.metric dt {
+    overflow: hidden;
+    color: var(--timeline-muted);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.metric dd {
+    margin: 0;
+    color: var(--timeline-ink);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+/* Breakpoint --lg: картки переходять у single-column layout */
+@media (--lg) {
+    .milestoneCard,
+    .milestoneCardMirrored {
+        grid-column: 2;
+        min-height: auto;
+        padding: 0.625rem;
+        border-radius: 1.25rem;
+    }
+
+    .milestoneImage {
+        border-radius: 0.875rem;
+
+        /* На вузькому viewport залишаємо трохи більше висоти */
+        aspect-ratio: 16 / 7;
+    }
+
+    .milestoneImageYear {
+        font-size: 2.5rem;
+    }
+
+    .milestoneBody {
+        padding: 0.875rem 0.375rem 0.375rem;
+    }
+
+    .milestoneTitle {
+        font-size: 1.35rem;
+    }
+
+    .metricGrid {
+        /* Дві колонки зручніші на середніх екранах */
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding-top: 0.875rem;
+    }
+}
+
+/* Breakpoint --md: мобільний single-column */
+@media (--md) {
+    .milestoneCard,
+    .milestoneCardMirrored {
+        grid-column: 2;
+        min-height: auto;
+        padding: 0.625rem;
+        border-radius: 1.25rem;
+    }
+
+    .milestoneImage {
+        aspect-ratio: 16 / 9;
+        border-radius: 0.75rem;
+    }
+
+    .milestoneImageYear {
+        font-size: 2.25rem;
+        right: 0.75rem;
+        bottom: 0.625rem;
+    }
+
+    .milestoneHeader {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .tagList {
+        justify-content: flex-start;
+    }
+
+    .milestoneTitle {
+        font-size: 1.25rem;
+    }
+
+    .milestoneDescription {
+        font-size: 0.875rem;
+    }
+
+    .metricGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .metric dt {
+        white-space: normal;
+    }
+}
+
+@media (--xs) {
+    .milestoneTitle {
+        font-size: 1.15rem;
+    }
+
+    .metricGrid {
+        grid-template-columns: 1fr;
+    }
+}

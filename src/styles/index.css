@@ -25,7 +25,7 @@
 
     /* Scroll Bar */
     --scrollbar-size: 6px;
-    --scrollbar-track-color: #ff981a;
+    --scrollbar-track-color: #d2d7da;
     --scrollbar-thumb-color: #ff660a;
     --scrollbar-thumb-color-hover: #ff810a;
 
@@ -67,7 +67,7 @@
 }
 
 body {
-    font-family: "Poppins", sans-serif;
+    font-family: "Montserrat", sans-serif;
 }
 
 .sr-only {

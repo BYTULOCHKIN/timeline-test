@@ -27,9 +27,9 @@ const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
                     <img src={homenetMarkUrl} alt="" className={s.brandMark} />
                     <span>HomeNet</span>
                 </div>
-                <div className={s.eyebrow}>Перезапуск у 2016 · ціль 2026</div>
+                <div className={s.eyebrow}>старт · 2016</div>
                 <Typography id="timeline-hero-title" variant="heading-3xl" className={s.heroTitle}>
-                    HomeNet там, де великий звʼязок зазвичай не ризикує.
+                    HomeNet - 10 років якості, потужності, надійності!
                 </Typography>
                 <Typography variant="body-lg" className={s.heroText}>
                     Таймлайн про шлях HomeNet від регіонального перезапуску до національного оператора фіксованого
