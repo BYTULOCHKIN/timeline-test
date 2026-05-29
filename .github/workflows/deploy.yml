@@ -34,7 +34,10 @@ jobs:
               run: npm run build
               env:
                   VITE_BASE: /timeline-test/
-                  VITE_API_URL: ${{ vars.VITE_API_URL }}
+                  VITE_API_URL: ${{ vars.VITE_API_URL }} # Использует переменную из настроек GitHub
+                  VITE_SUPABASE_URL: https://supabase.co
+                  VITE_SUPABASE_ANON_KEY: sb_publishable_izkqOr7IENAiC98iVdMMsQ_AOIMVcb1
+                  VITE_TURNSTILE_SITE_KEY: 0x4AAAAAADXObwhhLelqagfF
 
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
