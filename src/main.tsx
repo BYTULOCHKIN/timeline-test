@@ -48,7 +48,6 @@ const svgUseConfig: Config = {
     runtimeChecksEnabled: import.meta.env.DEV,
 };
 
-checkEnv(envSchema);
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
         <SvgUseConfigContext.Provider value={svgUseConfig}>
