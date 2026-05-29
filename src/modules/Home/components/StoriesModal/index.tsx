@@ -525,7 +525,7 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
 
     const storyUsers = React.useMemo<User[]>(() => {
         return (storiesQuery.data ?? []).map((story) => {
-            const fallbackImage = '/images/video_bg.png';
+            const fallbackImage = '/timeline-test/images/video_bg.png';
             const avatarUrl = story.images[0]?.publicUrl ?? fallbackImage;
 
             return {

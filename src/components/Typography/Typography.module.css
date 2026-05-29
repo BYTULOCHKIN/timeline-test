@@ -17,8 +17,8 @@
 
 @media (--md) {
     .wrap[data-variant="heading-3xl"] {
-        font-size: 4.75rem; /* 76px */
-        line-height: 5.375rem; /* 86px */
+        font-size: 2rem; /* 76px */
+        line-height: 2rem; /* 86px */
     }
 }
 
