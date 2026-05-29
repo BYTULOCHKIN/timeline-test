@@ -39,7 +39,10 @@ jobs:
                   VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
                   VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
                   VITE_TURNSTILE_SITE_KEY: ${{ vars.VITE_TURNSTILE_SITE_KEY }}
-
+            - name: Fix public images path for Subfolder
+              run: |
+                  mkdir -p ./dist/timeline-test
+                  cp -r ./dist/images ./dist/timeline-test/images
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3
               with:
