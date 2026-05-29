@@ -22,7 +22,7 @@ const FinalCTA: React.FC<FinalCTAProps> = ({ onRestart }) => {
                     <img src={homenetMarkUrl} alt="" className={s.brandMark} />
                     <span>HomeNet</span>
                 </div>
-                <span className={s.sectionKicker}>Наступне десятиліття</span>
+                <span className={s.sectionKicker}>Наступний крок</span>
                 <Typography id="final-cta-title" variant="heading-2xl" className={s.finalTitle}>
                     Наступний крок — 300 000 абонентів і нові регіони покриття.
                 </Typography>

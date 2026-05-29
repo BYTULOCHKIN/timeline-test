@@ -21,8 +21,8 @@ const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCar
         const metrics = Object.entries(milestone.metrics ?? {});
         const isMirrored = index % 2 === 1;
         const isInView = useInView(articleRef, {
-            amount: 0.42,
-            margin: '-12% 0px -18% 0px',
+            amount: 0.08,
+            margin: '0px 0px 18% 0px',
         });
 
         const setArticleRef = React.useCallback(
