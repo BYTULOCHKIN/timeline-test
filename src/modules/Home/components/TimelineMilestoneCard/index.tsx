@@ -23,6 +23,7 @@ const TimelineMilestoneCard = React.forwardRef<HTMLElement, TimelineMilestoneCar
         const isInView = useInView(articleRef, {
             amount: 0.08,
             margin: '0px 0px 18% 0px',
+            once: true,
         });
 
         const setArticleRef = React.useCallback(

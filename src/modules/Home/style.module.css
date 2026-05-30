@@ -184,7 +184,7 @@
 
 .heroVisual {
     position: relative;
-    min-height: 34rem;
+    min-height: 20rem;
     border: 1px solid var(--timeline-glass-strong);
     border-radius: 2rem;
     background:

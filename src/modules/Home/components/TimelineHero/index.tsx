@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/Button/Button';
 import Typography from '@/components/Typography/Typography';
 import s from '../../style.module.css';
+import yearsImg from '/images/10_років_довіри_HomeNet_біле_обраний_варіант_логотипу.jpg';
 
 type TimelineHeroProps = {
     onExplore: () => void;
@@ -50,16 +51,18 @@ const TimelineHero: React.FC<TimelineHeroProps> = ({ onExplore }) => {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ delay: 0.15, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             >
-                <div className={s.orbit}>
+                {/* <div className={s.orbit}>
                     <span />
                     <span />
                     <span />
-                </div>
-                <div className={s.anniversaryMark}>
-                    <img src={homenetMarkUrl} alt="" className={s.anniversaryLogo} />
-                    <span>10</span>
-                    <small>років</small>
-                </div>
+                </div> */}
+                {/* <div className={s.anniversaryMark}> */}
+                {/* <img src={homenetMarkUrl} alt="" className={s.anniversaryLogo} /> */}
+                {/* <img src={yearsImg} alt="10 років" className={s.anniversaryYears} /> */}
+                {/* <span>10</span>
+                    <small>років</small> */}
+                {/* </div> */}
+                <img src={yearsImg} alt="10 років" className={s.anniversaryYears} />
                 <div className={s.signalCard}>
                     <strong>97%</strong>
                     <span>мережі побудовано на PON-технології</span>
