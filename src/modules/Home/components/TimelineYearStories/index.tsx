@@ -3,8 +3,9 @@ import type { Milestone } from '../../types';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { AvatarList } from 'react-instagram-stories';
 import { userStoriesByYearQueryOptions } from '@/services/userStories/queries';
+import StoryBubble from './components/StoryBubble/StoryBubble';
+import { generateBubblePositions } from './bubbleLayout';
 import s from './styles.module.css';
 
 type TimelineYearStoriesProps = {
@@ -27,6 +28,7 @@ const TimelineYearStories: React.FC<TimelineYearStoriesProps> = ({
     onStoryAdd,
 }) => {
     const storiesQuery = useQuery(userStoriesByYearQueryOptions(milestone.year));
+
     const [viewedStoryIds, setViewedStoryIds] = React.useState<Set<string>>(() => {
         return new Set();
     });
@@ -73,22 +75,26 @@ const TimelineYearStories: React.FC<TimelineYearStoriesProps> = ({
         });
     }, [storiesQuery.data, viewedStoryIds]);
 
+    const bubblePositions = React.useMemo(() => {
+        return generateBubblePositions(storyUsers.length);
+    }, [storyUsers.length]);
+
     const markStoryViewed = React.useCallback(
         (storyId: string) => {
-            setViewedStoryIds((currentStoryIds) => {
-                const nextStoryIds = new Set(currentStoryIds);
-                nextStoryIds.add(storyId);
+            setViewedStoryIds((current) => {
+                const next = new Set(current);
+                next.add(storyId);
 
                 try {
                     window.localStorage.setItem(
                         getViewedStoriesStorageKey(milestone.year),
-                        JSON.stringify(Array.from(nextStoryIds))
+                        JSON.stringify(Array.from(next))
                     );
                 } catch {
-                    // localStorage is optional; visual state still updates for this session.
+                    // localStorage опціональний
                 }
 
-                return nextStoryIds;
+                return next;
             });
         },
         [milestone.year]
@@ -104,38 +110,31 @@ const TimelineYearStories: React.FC<TimelineYearStoriesProps> = ({
             aria-label={`Історії команди за ${milestone.year} рік`}
         >
             <div className={s.timelineStoryBubbleField}>
-                {storyUsers.length > 0 ? (
-                    <AvatarList
-                        users={storyUsers}
-                        onAvatarClick={(userIndex) => {
-                            const storyUser = storyUsers[userIndex];
+                {storyUsers.map((user, index) => {
+                    const pos = bubblePositions[index];
+                    if (!pos) return null;
 
-                            if (storyUser) {
-                                markStoryViewed(storyUser.id);
-                            }
-
-                            onStoriesOpen(milestone.year, userIndex);
-                        }}
-                        classNames={{
-                            root: s.timelineStoryAvatarList,
-                            avatar: {
-                                root: s.timelineStoryAvatar,
-                                ring: s.timelineStoryAvatarRing,
-                                imageWrapper: s.timelineStoryAvatarImageWrapper,
-                                image: s.timelineStoryAvatarImage,
-                                placeholder: s.timelineStoryAvatarPlaceholder,
-                                username: s.timelineStoryAvatarUsername,
-                            },
-                        }}
-                    />
-                ) : null}
+                    return (
+                        <StoryBubble
+                            key={user.id}
+                            avatarUrl={user.avatarUrl}
+                            username={user.username}
+                            hasUnreadStories={user.hasUnreadStories ?? false}
+                            position={pos}
+                            onClick={() => {
+                                markStoryViewed(user.id);
+                                onStoriesOpen(milestone.year, index); // ← як було раніше
+                            }}
+                        />
+                    );
+                })}
 
                 <button
                     className={clsx(s.emptyStoryBubble, storyUsers.length > 0 && s.emptyStoryBubbleHidden)}
                     type="button"
                     disabled={storiesQuery.isLoading}
                     onClick={() => {
-                        onStoriesOpen(milestone.year);
+                        return onStoriesOpen(milestone.year);
                     }}
                 >
                     {storiesQuery.isLoading ? '...' : milestone.year}
@@ -146,12 +145,13 @@ const TimelineYearStories: React.FC<TimelineYearStoriesProps> = ({
                     type="button"
                     aria-label={`Додати історію за ${milestone.year} рік`}
                     onClick={() => {
-                        onStoryAdd(milestone.year);
+                        return onStoryAdd(milestone.year);
                     }}
                 >
                     <span aria-hidden="true">+</span>
                 </button>
             </div>
+            {/* StoryViewer живе в батьківському компоненті — тут його немає */}
         </aside>
     );
 };

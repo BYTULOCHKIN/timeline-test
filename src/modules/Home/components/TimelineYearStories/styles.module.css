@@ -1,6 +1,5 @@
 /* ─────────────────────────────────────────────────────────
    TimelineYearStories.module.css
-   Стилі для компоненту TimelineYearStories.
    ───────────────────────────────────────────────────────── */
 
 /* ── Layout ─────────────────────────────────────────────── */
@@ -12,7 +11,6 @@
     min-height: 29rem;
 }
 
-/* Variant: дзеркальна позиція (grid-column 1) */
 .timelineStoriesMirrored {
     grid-column: 1 / span 1;
 }
@@ -28,184 +26,7 @@
     overflow: hidden;
 }
 
-/* ── Avatar List (react-instagram-stories) ───────────────── */
-
-.timelineStoryAvatarList {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    overflow: visible;
-    scrollbar-width: none;
-}
-
-.timelineStoryAvatarList::-webkit-scrollbar {
-    display: none;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-list-inner) {
-    position: absolute !important;
-    inset: 0 !important;
-    display: block !important;
-    width: 100% !important;
-    min-height: 100% !important;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item) {
-    position: absolute !important;
-    top: var(--bubble-y, 50%) !important;
-    left: var(--bubble-x, 50%) !important;
-    width: var(--bubble-size, 4rem) !important;
-    height: var(--bubble-size, 4rem) !important;
-    transform: translate(-50%, -50%);
-}
-
-/* Bubble positions & sizes */
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(1)) {
-    --bubble-x: 50%;
-    --bubble-y: 48%;
-    --bubble-size: 6.8rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(2)) {
-    --bubble-x: 28%;
-    --bubble-y: 40%;
-    --bubble-size: 4.9rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(3)) {
-    --bubble-x: 72%;
-    --bubble-y: 38%;
-    --bubble-size: 5.25rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(4)) {
-    --bubble-x: 38%;
-    --bubble-y: 66%;
-    --bubble-size: 5.4rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(5)) {
-    --bubble-x: 64%;
-    --bubble-y: 68%;
-    --bubble-size: 4.8rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(6)) {
-    --bubble-x: 17%;
-    --bubble-y: 62%;
-    --bubble-size: 4.3rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(7)) {
-    --bubble-x: 83%;
-    --bubble-y: 60%;
-    --bubble-size: 4.1rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(8)) {
-    --bubble-x: 22%;
-    --bubble-y: 22%;
-    --bubble-size: 3.95rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(9)) {
-    --bubble-x: 52%;
-    --bubble-y: 20%;
-    --bubble-size: 4.15rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(10)) {
-    --bubble-x: 80%;
-    --bubble-y: 22%;
-    --bubble-size: 3.9rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(11)) {
-    --bubble-x: 12%;
-    --bubble-y: 39%;
-    --bubble-size: 3.7rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(12)) {
-    --bubble-x: 88%;
-    --bubble-y: 41%;
-    --bubble-size: 3.75rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(13)) {
-    --bubble-x: 23%;
-    --bubble-y: 80%;
-    --bubble-size: 3.9rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(14)) {
-    --bubble-x: 50%;
-    --bubble-y: 84%;
-    --bubble-size: 4.3rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(15)) {
-    --bubble-x: 76%;
-    --bubble-y: 81%;
-    --bubble-size: 3.8rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(16)) {
-    --bubble-x: 37%;
-    --bubble-y: 25%;
-    --bubble-size: 3.55rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(17)) {
-    --bubble-x: 65%;
-    --bubble-y: 24%;
-    --bubble-size: 3.55rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(18)) {
-    --bubble-x: 35%;
-    --bubble-y: 82%;
-    --bubble-size: 3.35rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(19)) {
-    --bubble-x: 64%;
-    --bubble-y: 84%;
-    --bubble-size: 3.35rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(20)) {
-    --bubble-x: 11%;
-    --bubble-y: 76%;
-    --bubble-size: 3.3rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(21)) {
-    --bubble-x: 90%;
-    --bubble-y: 75%;
-    --bubble-size: 3.3rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(22)) {
-    --bubble-x: 12%;
-    --bubble-y: 24%;
-    --bubble-size: 3.25rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(23)) {
-    --bubble-x: 91%;
-    --bubble-y: 27%;
-    --bubble-size: 3.25rem;
-}
-
-.timelineStoryAvatarList :global(.story-avatar-item:nth-child(24)) {
-    --bubble-x: 49%;
-    --bubble-y: 8%;
-    --bubble-size: 3.1rem;
-}
+/* ── Avatar List ─────────────────────────────────────────── */
 
 /* ── Avatar ──────────────────────────────────────────────── */
 
@@ -223,18 +44,6 @@
     filter: saturate(1.1);
 }
 
-/*
-    FIX 1 — Товстий бордер:
-    Бібліотека сама додає border на .story-avatar-ring.
-    Скидаємо його, щоб не додавати зайвої товщини поверх нашого
-    підходу з padding + gradient.
-
-    FIX 2 — Gradient перезаписується:
-    Комбінуємо :global(.story-avatar-ring) + наш модульний клас
-    → подвоєна специфічність, gradient гарантовано виграє.
-    !important — страховка на випадок якщо бібліотека завантажиться
-    пізніше і матиме таку ж специфічність.
-*/
 :global(.story-avatar-ring).timelineStoryAvatarRing {
     border: none !important;
     background: linear-gradient(45deg, #ff981a 0%, #ff810a 35%, #ff660a 70%, #bf3f00 100%) !important;
@@ -246,14 +55,6 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-
-    /*
-        "Border" через padding — бачимо gradient за аватаром.
-        Використовуємо --bubble-size щоб кільце залишалось
-        пропорційним: clamp(2px … 2.5px).
-        Великій бульбашці (6.8rem ≈ 109px) — ~2px, маленьким — теж 2px.
-        Раніше було 3px фіксовано — це і виглядало грубо на великій.
-    */
     padding: clamp(2px, calc(var(--bubble-size, 4rem) * 0.022), 2.5px);
     background: linear-gradient(45deg, #ff981a 0%, #ff810a 35%, #ff660a 70%, #bf3f00 100%);
     box-shadow:
@@ -261,7 +62,6 @@
         0 0 0 1px color-mix(in srgb, var(--color-white-100) 60%, transparent);
 }
 
-/* Read state — сірий замість помаранчевого */
 .timelineStoryAvatar:global(.story-avatar-read) .timelineStoryAvatarRing,
 .timelineStoryAvatar:global(.story-avatar-read) :global(.story-avatar-ring).timelineStoryAvatarRing {
     background: color-mix(in srgb, var(--color-text-secondary) 42%, var(--color-white-100)) !important;
@@ -271,8 +71,6 @@
 .timelineStoryAvatarImageWrapper {
     width: 100%;
     height: 100%;
-
-    /* Білий зазор між кільцем і фото — теж підтягуємо до 2px */
     border: 2px solid var(--color-white-100);
     background: var(--timeline-accent-soft);
 }
@@ -358,7 +156,6 @@
     transform: translateY(-1px);
 }
 
-/* Focus ring — shared для трьох інтерактивних елементів */
 .addStoryBubble:focus-visible,
 .emptyStoryBubble:focus-visible,
 .timelineStoryAvatar:focus-visible {
@@ -380,11 +177,6 @@
 
     .timelineStoryBubbleField {
         min-height: 16rem;
-    }
-
-    .timelineStoryAvatarList :global(.story-avatar-item) {
-        width: calc(var(--bubble-size, 4rem) * 0.78);
-        height: calc(var(--bubble-size, 4rem) * 0.78);
     }
 
     .addStoryBubble {
