@@ -799,8 +799,8 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
                                                     message: 'Історія має містити щонайменше 5 символів.',
                                                 },
                                                 maxLength: {
-                                                    value: 1500,
-                                                    message: 'Історія має містити до 1500 символів.',
+                                                    value: 4000,
+                                                    message: 'Історія має містити до 4000 символів.',
                                                 },
                                             })}
                                         />

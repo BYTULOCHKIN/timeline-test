@@ -126,8 +126,8 @@ Deno.serve(async (request) => {
         return json({ message: 'Посада має містити до 120 символів' }, 400);
     }
 
-    if (storyText.length < 5 || storyText.length > 1500) {
-        return json({ message: 'Історія має містити від 5 до 1500 символів' }, 400);
+    if (storyText.length < 5 || storyText.length > 4000) {
+        return json({ message: 'Історія має містити від 5 до 4000 символів' }, 400);
     }
 
     if (images.length === 0 || images.length > MAX_IMAGES) {
