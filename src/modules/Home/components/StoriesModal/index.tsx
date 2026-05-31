@@ -181,6 +181,7 @@ const createStoryContentComponent = ({
     deleteError,
     onDeleteStory: handleDeleteStory,
     onCancelDelete,
+    onOpenFullText,
 }: {
     story: UserStory;
     imageUrl: string;
@@ -192,6 +193,7 @@ const createStoryContentComponent = ({
     deleteError: string;
     onDeleteStory: (_storyId: string) => void;
     onCancelDelete: () => void;
+    onOpenFullText: (_story: UserStory) => void;
 }) => {
     const StoryContent: React.FC<StoryItemControls> = ({ pause, resume }) => {
         'use no memo';
@@ -215,7 +217,6 @@ const createStoryContentComponent = ({
             event.stopPropagation();
         };
 
-        const [isFullOpen, setIsFullOpen] = React.useState(false);
         const storyText = story.storyText ?? '';
         const READ_MORE_THRESHOLD = 300;
         const shouldShowReadMore = storyText.length > READ_MORE_THRESHOLD;
@@ -251,63 +252,18 @@ const createStoryContentComponent = ({
                         <button
                             className={s.instagramStoryReadMore}
                             type="button"
-                            onPointerDownCapture={(event) => {
-                                event.stopPropagation();
-                                try {
-                                    pause?.();
-                                } catch {
-                                    // ignore
-                                }
-                            }}
+                            onPointerDownCapture={stopViewerInteraction}
                             onPointerUpCapture={stopViewerInteraction}
                             onPointerDown={stopViewerInteraction}
                             onPointerUp={stopViewerInteraction}
                             onClick={(event) => {
                                 event.stopPropagation();
-                                setIsFullOpen(true);
+                                onOpenFullText(story);
                             }}
                         >
                             Читати повністю
                         </button>
                     ) : null}
-
-                    <Dialog.Root
-                        open={isFullOpen}
-                        onOpenChange={(nextOpen) => {
-                            setIsFullOpen(nextOpen);
-                        }}
-                    >
-                        <Dialog.Portal className={s.fullTextDialogPortal}>
-                            <Dialog.Backdrop className={s.fullTextDialogScrim} forceRender />
-                            <Dialog.Viewport className={s.fullTextDialogViewport}>
-                                <Dialog.Popup className={s.fullTextDialog}>
-                                    <header className={s.formHeader}>
-                                        <div>
-                                            <span className={s.sectionKicker}>{story.authorName}</span>
-                                            <Dialog.Title className={s.formTitle}>Повний текст історії</Dialog.Title>
-                                            {story.authorRole ? (
-                                                <Dialog.Description className={s.formDescription}>
-                                                    {story.authorRole}
-                                                </Dialog.Description>
-                                            ) : null}
-                                        </div>
-                                        <Dialog.Close className={s.modalClose}>Закрити</Dialog.Close>
-                                    </header>
-
-                                    <div className={s.formBody}>
-                                        <div
-                                            className={s.fullTextContent}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                            }}
-                                        >
-                                            <div style={{ whiteSpace: 'pre-wrap' }}>{storyText}</div>
-                                        </div>
-                                    </div>
-                                </Dialog.Popup>
-                            </Dialog.Viewport>
-                        </Dialog.Portal>
-                    </Dialog.Root>
 
                     {deleteError ? (
                         <p className={s.instagramStoryError} aria-live="polite">
@@ -370,6 +326,11 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
     const [deletingStoryId, setDeletingStoryId] = React.useState<string | null>(null);
     const [confirmingStoryId, setConfirmingStoryId] = React.useState<string | null>(null);
     const [isFormOpen, setIsFormOpen] = React.useState(false);
+    const [fullTextStory, setFullTextStory] = React.useState<UserStory | null>(null);
+    const [viewerPosition, setViewerPosition] = React.useState({
+        userIndex: initialUserIndex,
+        storyIndex: 0,
+    });
     const isAdminMode = React.useMemo(() => {
         return new URLSearchParams(window.location.search).get('mode') === 'admin';
     }, []);
@@ -510,6 +471,14 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
     }, [year]);
 
     React.useEffect(() => {
+        setFullTextStory(null);
+        setViewerPosition({
+            userIndex: initialUserIndex,
+            storyIndex: 0,
+        });
+    }, [initialUserIndex, isOpen, year]);
+
+    React.useEffect(() => {
         if (isOpen || isFormOpen) {
             return undefined;
         }
@@ -631,6 +600,10 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
         [confirmingStoryId, deleteUserStoryAsync, queryClient, year]
     );
 
+    const onOpenFullText = React.useCallback((story: UserStory) => {
+        setFullTextStory(story);
+    }, []);
+
     const storyUsers = React.useMemo<User[]>(() => {
         return (storiesQuery.data ?? []).map((story) => {
             const fallbackImage = '/images/video_bg.png';
@@ -661,6 +634,7 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
                                       onCancelDelete() {
                                           setConfirmingStoryId(null);
                                       },
+                                      onOpenFullText,
                                   }),
                               };
                           })
@@ -682,15 +656,28 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
                                       onCancelDelete() {
                                           setConfirmingStoryId(null);
                                       },
+                                      onOpenFullText,
                                   }),
                               },
                           ],
             };
         });
-    }, [confirmingStoryId, deleteError, deletingStoryId, isAdminMode, onDeleteStory, storiesQuery.data]);
+    }, [
+        confirmingStoryId,
+        deleteError,
+        deletingStoryId,
+        isAdminMode,
+        onDeleteStory,
+        onOpenFullText,
+        storiesQuery.data,
+    ]);
 
-    const isViewerOpen = isOpen && Boolean(year) && !shouldOpenForm && storyUsers.length > 0;
-    const safeInitialUserIndex = Math.min(initialUserIndex, Math.max(storyUsers.length - 1, 0));
+    const isViewerOpen = isOpen && Boolean(year) && !shouldOpenForm && !fullTextStory && storyUsers.length > 0;
+    const safeInitialUserIndex = Math.min(viewerPosition.userIndex, Math.max(storyUsers.length - 1, 0));
+    const safeInitialStoryIndex = Math.min(
+        viewerPosition.storyIndex,
+        Math.max((storyUsers[safeInitialUserIndex]?.stories.length ?? 1) - 1, 0)
+    );
     const isEmptyStateOpen =
         isOpen && Boolean(year) && !shouldOpenForm && !storiesQuery.isLoading && storyUsers.length === 0;
 
@@ -701,6 +688,16 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
 
         preloadStoryImages(storiesQuery.data);
     }, [isViewerOpen, storiesQuery.data]);
+
+    const onViewerStoryChange = React.useCallback((userIndex: number, storyIndex: number) => {
+        setViewerPosition((currentPosition) => {
+            if (currentPosition.userIndex === userIndex && currentPosition.storyIndex === storyIndex) {
+                return currentPosition;
+            }
+
+            return { userIndex, storyIndex };
+        });
+    }, []);
 
     React.useEffect(() => {
         if (!isViewerOpen) {
@@ -714,7 +711,7 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
                 return;
             }
 
-            // Ignore clicks coming from the "Читати повністю" button so nested dialog can open
+            // Let the read-more button open the full-text dialog before the viewer unmounts.
             if (target.closest(`.${s.instagramStoryReadMore}`)) {
                 return;
             }
@@ -739,30 +736,68 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
 
     return (
         <>
-            <StoryViewer
-                users={storyUsers}
-                isOpen={isViewerOpen}
-                initialUserIndex={safeInitialUserIndex}
-                initialStoryIndex={0}
-                onClose={onClose}
-                classNames={{
-                    root: s.instagramViewerRoot,
-                    overlay: s.instagramViewerOverlay,
-                    content: s.instagramViewerContent,
-                    header: s.instagramViewerHeader,
-                    closeButton: s.instagramViewerClose,
-                    items: s.instagramViewerItems,
-                    storyItem: {
-                        root: s.instagramViewerStoryItem,
-                    },
-                    progressBars: {
-                        root: s.instagramProgressRoot,
-                        bar: {
-                            fill: s.instagramProgressFill,
+            {fullTextStory ? null : (
+                <StoryViewer
+                    users={storyUsers}
+                    isOpen={isViewerOpen}
+                    initialUserIndex={safeInitialUserIndex}
+                    initialStoryIndex={safeInitialStoryIndex}
+                    onClose={onClose}
+                    onStoryChange={onViewerStoryChange}
+                    classNames={{
+                        root: s.instagramViewerRoot,
+                        overlay: s.instagramViewerOverlay,
+                        content: s.instagramViewerContent,
+                        header: s.instagramViewerHeader,
+                        closeButton: s.instagramViewerClose,
+                        items: s.instagramViewerItems,
+                        storyItem: {
+                            root: s.instagramViewerStoryItem,
                         },
-                    },
+                        progressBars: {
+                            root: s.instagramProgressRoot,
+                            bar: {
+                                fill: s.instagramProgressFill,
+                            },
+                        },
+                    }}
+                />
+            )}
+
+            <Dialog.Root
+                open={Boolean(fullTextStory)}
+                onOpenChange={(nextOpen) => {
+                    if (!nextOpen) {
+                        setFullTextStory(null);
+                    }
                 }}
-            />
+            >
+                <Dialog.Portal className={s.fullTextDialogPortal}>
+                    <Dialog.Backdrop className={s.fullTextDialogScrim} forceRender />
+                    <Dialog.Viewport className={s.fullTextDialogViewport}>
+                        <Dialog.Popup className={s.fullTextDialog}>
+                            <header className={s.formHeader}>
+                                <div>
+                                    <span className={s.sectionKicker}>{fullTextStory?.authorName}</span>
+                                    <Dialog.Title className={s.formTitle}>Повний текст історії</Dialog.Title>
+                                    {fullTextStory?.authorRole ? (
+                                        <Dialog.Description className={s.formDescription}>
+                                            {fullTextStory.authorRole}
+                                        </Dialog.Description>
+                                    ) : null}
+                                </div>
+                                <Dialog.Close className={s.modalClose}>Закрити</Dialog.Close>
+                            </header>
+
+                            <div className={s.formBody}>
+                                <div className={s.fullTextContent}>
+                                    <div style={{ whiteSpace: 'pre-wrap' }}>{fullTextStory?.storyText}</div>
+                                </div>
+                            </div>
+                        </Dialog.Popup>
+                    </Dialog.Viewport>
+                </Dialog.Portal>
+            </Dialog.Root>
 
             <Dialog.Root
                 open={isEmptyStateOpen}

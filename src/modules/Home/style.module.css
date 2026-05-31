@@ -1376,11 +1376,23 @@
 .fullTextDialogViewport {
     position: fixed;
     inset: 0;
-    z-index: 61;
+    z-index: 10002;
     display: grid;
     place-items: center;
     padding: 1rem;
     overflow-y: auto;
+
+    --timeline-ink: var(--color-dark-900);
+    --timeline-muted: var(--color-text-secondary);
+    --timeline-accent: var(--color-primary);
+    --timeline-accent-strong: color-mix(in srgb, var(--color-primary) 84%, var(--color-dark-900));
+    --timeline-teal: color-mix(in srgb, var(--color-surface-raised-hover) 55%, var(--scrollbar-track-color));
+    --timeline-border: color-mix(in srgb, var(--color-border) 10%, transparent);
+    --timeline-glass: color-mix(in srgb, var(--color-white-100) 92%, transparent);
+    --timeline-glass-strong: var(--color-white-100);
+    --button-height-small: 2rem;
+    --button-px-small: 0.875rem;
+    --button-font-size-small: 0.75rem;
 }
 
 /* Ensure dialog interior pieces inherit correct spacing and scrolling */
