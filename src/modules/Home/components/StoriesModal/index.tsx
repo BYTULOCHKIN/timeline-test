@@ -215,6 +215,11 @@ const createStoryContentComponent = ({
             event.stopPropagation();
         };
 
+        const [isFullOpen, setIsFullOpen] = React.useState(false);
+        const storyText = story.storyText ?? '';
+        const READ_MORE_THRESHOLD = 300;
+        const shouldShowReadMore = storyText.length > READ_MORE_THRESHOLD;
+
         return (
             <div
                 className={s.instagramStoryContent}
@@ -240,7 +245,69 @@ const createStoryContentComponent = ({
                         ) : null}
                     </div>
 
-                    <p>{story.storyText}</p>
+                    <p>{storyText}</p>
+
+                    {shouldShowReadMore ? (
+                        <button
+                            className={s.instagramStoryReadMore}
+                            type="button"
+                            onPointerDownCapture={(event) => {
+                                event.stopPropagation();
+                                try {
+                                    pause?.();
+                                } catch {
+                                    // ignore
+                                }
+                            }}
+                            onPointerUpCapture={stopViewerInteraction}
+                            onPointerDown={stopViewerInteraction}
+                            onPointerUp={stopViewerInteraction}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                setIsFullOpen(true);
+                            }}
+                        >
+                            Читати повністю
+                        </button>
+                    ) : null}
+
+                    <Dialog.Root
+                        open={isFullOpen}
+                        onOpenChange={(nextOpen) => {
+                            setIsFullOpen(nextOpen);
+                        }}
+                    >
+                        <Dialog.Portal className={s.fullTextDialogPortal}>
+                            <Dialog.Backdrop className={s.fullTextDialogScrim} forceRender />
+                            <Dialog.Viewport className={s.fullTextDialogViewport}>
+                                <Dialog.Popup className={s.fullTextDialog}>
+                                    <header className={s.formHeader}>
+                                        <div>
+                                            <span className={s.sectionKicker}>{story.authorName}</span>
+                                            <Dialog.Title className={s.formTitle}>Повний текст історії</Dialog.Title>
+                                            {story.authorRole ? (
+                                                <Dialog.Description className={s.formDescription}>
+                                                    {story.authorRole}
+                                                </Dialog.Description>
+                                            ) : null}
+                                        </div>
+                                        <Dialog.Close className={s.modalClose}>Закрити</Dialog.Close>
+                                    </header>
+
+                                    <div className={s.formBody}>
+                                        <div
+                                            className={s.fullTextContent}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                            }}
+                                        >
+                                            <div style={{ whiteSpace: 'pre-wrap' }}>{storyText}</div>
+                                        </div>
+                                    </div>
+                                </Dialog.Popup>
+                            </Dialog.Viewport>
+                        </Dialog.Portal>
+                    </Dialog.Root>
 
                     {deleteError ? (
                         <p className={s.instagramStoryError} aria-live="polite">
@@ -644,6 +711,11 @@ const StoriesModal: React.FC<StoriesModalProps> = ({ year, isOpen, shouldOpenFor
             const target = event.target;
 
             if (!(target instanceof Element)) {
+                return;
+            }
+
+            // Ignore clicks coming from the "Читати повністю" button so nested dialog can open
+            if (target.closest(`.${s.instagramStoryReadMore}`)) {
                 return;
             }
 
